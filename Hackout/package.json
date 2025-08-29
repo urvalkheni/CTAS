@@ -1,7 +1,7 @@
 {
-  "name": "hackout",
+  "name": "coastal-threat-alert-system",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +11,10 @@
   },
   "dependencies": {
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "recharts": "^2.12.0",
+    "lucide-react": "^0.344.0",
+    "date-fns": "^3.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
