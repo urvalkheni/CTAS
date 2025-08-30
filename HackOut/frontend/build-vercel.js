@@ -7,35 +7,25 @@ import { join } from 'path';
 console.log('🔧 Starting Vercel-compatible build process...');
 
 try {
-  // Clean up problematic Rollup native modules
-  const rollupPath = join(process.cwd(), 'node_modules', '@rollup');
-  if (existsSync(rollupPath)) {
-    console.log('🧹 Cleaning up Rollup native modules...');
-    rmSync(rollupPath, { recursive: true, force: true });
+  // Force reinstall Rollup with proper platform binaries
+  console.log('🔄 Reinstalling Rollup with correct binaries...');
+  try {
+    execSync('npm uninstall rollup @rollup/rollup-linux-x64-gnu', { stdio: 'pipe' });
+  } catch (e) {
+    // Ignore if already uninstalled
   }
+  
+  execSync('npm install rollup@latest --force', { stdio: 'inherit' });
+  
+  console.log('✅ Rollup reinstalled, starting Vite build...');
 
-  // Clean up any other platform-specific modules
-  const nativeModules = [
-    join(process.cwd(), 'node_modules', '@rollup'),
-    join(process.cwd(), 'node_modules', 'rollup', 'dist', 'native.js')
-  ];
-
-  nativeModules.forEach(path => {
-    if (existsSync(path)) {
-      console.log(`🧹 Removing: ${path}`);
-      rmSync(path, { recursive: true, force: true });
-    }
-  });
-
-  console.log('✅ Cleanup completed, starting Vite build...');
-
-  // Run the actual Vite build
+  // Run the actual Vite build with environment variables
   execSync('npx vite build', { 
     stdio: 'inherit',
     env: {
       ...process.env,
-      ROLLUP_SKIP_NATIVE: 'true',
-      NODE_OPTIONS: '--no-experimental-fetch'
+      NODE_ENV: 'production',
+      NODE_OPTIONS: '--max-old-space-size=4096'
     }
   });
 
@@ -43,5 +33,21 @@ try {
 
 } catch (error) {
   console.error('❌ Build failed:', error.message);
-  process.exit(1);
+  
+  // Fallback: try with rollup skip native
+  console.log('🔄 Attempting fallback build with ROLLUP_SKIP_NATIVE...');
+  try {
+    execSync('npx vite build', { 
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        ROLLUP_SKIP_NATIVE: 'true',
+        NODE_ENV: 'production'
+      }
+    });
+    console.log('✅ Fallback build completed successfully!');
+  } catch (fallbackError) {
+    console.error('❌ Fallback build also failed:', fallbackError.message);
+    process.exit(1);
+  }
 }
