@@ -21,13 +21,19 @@ function App() {
     
     const initializeApp = async () => {
       // Initialize authentication from localStorage
+      console.log('🌊 About to dispatch initializeAuth...');
       dispatch(initializeAuth());
       
       // Set initial view based on auth status
       const storedUser = localStorage.getItem('ctas_user');
       const storedToken = localStorage.getItem('ctas_token');
       
-      console.log('🌊 Checking auth...', { storedUser: !!storedUser, storedToken: !!storedToken });
+      console.log('🌊 Checking auth...', { 
+        storedUser: storedUser ? 'exists' : 'null', 
+        storedToken: storedToken ? 'exists' : 'null',
+        isAuthenticated,
+        user: user?.name || 'null'
+      });
       
       if (storedUser && storedToken && isAuthenticated) {
         dispatch(setCurrentView('dashboard'));
