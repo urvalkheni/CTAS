@@ -26,206 +26,114 @@ st.set_page_config(
 
 # Custom CSS
 st.markdown("""
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 <style>
-    /* Hero Section */
+    body, html, .main, .block-container {
+        font-family: 'Montserrat', sans-serif !important;
+        background: linear-gradient(135deg, #e0f7fa 0%, #80deea 100%);
+        color: #222;
+    }
+    .main-header, .hero-title {
+        font-family: 'Montserrat', sans-serif !important;
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: #0077b6;
+        text-shadow: 1px 1px 8px #b2ebf2;
+    }
     .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #00b4d8 0%, #48cae4 100%);
         color: white;
         padding: 4rem 2rem;
         border-radius: 1rem;
         text-align: center;
         margin-bottom: 3rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
-    
-    .hero-title {
-        font-size: 4rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    .hero-subtitle {
-        font-size: 1.5rem;
-        margin-bottom: 2rem;
-        opacity: 0.9;
-    }
-    
-    .hero-description {
-        font-size: 1.1rem;
-        max-width: 600px;
-        margin: 0 auto 2rem;
-        line-height: 1.6;
-    }
-    
-    /* Feature Cards */
     .feature-card {
-        background: white;
+        background: #ffffffcc;
         padding: 2rem;
         border-radius: 1rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.07);
         text-align: center;
         margin-bottom: 2rem;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 1px solid #e1e5e9;
+        border: 1px solid #b2ebf2;
+        transition: transform 0.3s, box-shadow 0.3s;
     }
-    
     .feature-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
     }
-    
-    .feature-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
-    
     .feature-title {
+        color: #0077b6;
         font-size: 1.5rem;
-        font-weight: 600;
-        color: #2c3e50;
+        font-weight: 700;
         margin-bottom: 1rem;
     }
-    
     .feature-description {
-        color: #6c757d;
-        line-height: 1.6;
+        color: #222;
+        font-size: 1.1rem;
+        line-height: 1.7;
     }
-    
-    /* CTA Buttons */
     .cta-section {
-        background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        background: linear-gradient(135deg, #00b4d8 0%, #48cae4 100%);
         color: white;
         padding: 3rem 2rem;
         border-radius: 1rem;
         text-align: center;
         margin: 3rem 0;
     }
-    
     .cta-button {
-        background: white;
-        color: #0984e3;
+        background: #0077b6;
+        color: white;
         padding: 1rem 2rem;
         border: none;
         border-radius: 0.5rem;
         font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin: 0.5rem;
-        text-decoration: none;
-        display: inline-block;
-        min-width: 200px;
-    }
-    
-    .cta-button:hover {
-        background: #f8f9fa;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    
-    .cta-button-secondary {
-        background: transparent;
-        color: white;
-        border: 2px solid white;
-    }
-    
-    .cta-button-secondary:hover {
-        background: white;
-        color: #0984e3;
-    }
-    
-    /* Logout Page */
-    .logout-container {
-        background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
-        color: white;
-        padding: 4rem 2rem;
-        border-radius: 1rem;
-        text-align: center;
-        margin: 2rem 0;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-    
-    .logout-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-    }
-    
-    .logout-title {
-        font-size: 2.5rem;
         font-weight: 700;
-        margin-bottom: 1rem;
+        cursor: pointer;
+        margin: 0.5rem;
+        min-width: 200px;
+        box-shadow: 0 2px 8px #b2ebf2;
+        transition: background 0.3s, color 0.3s;
     }
-    
-    .logout-message {
-        font-size: 1.2rem;
-        margin-bottom: 2rem;
-        opacity: 0.9;
+    .cta-button:hover {
+        background: #48cae4;
+        color: #0077b6;
     }
-    
-    /* Existing Styles */
-    .main-header {
-        font-size: 3rem;
-        font-weight: bold;
-        text-align: center;
-        color: #1f77b4;
-        margin-bottom: 2rem;
-    }
-    .alert-critical { background-color: #ffebee; border-left: 4px solid #d32f2f; }
-    .alert-high { background-color: #fff3e0; border-left: 4px solid #f57c00; }
-    .alert-moderate { background-color: #fff8e1; border-left: 4px solid #ffa000; }
-    .alert-low { background-color: #f1f8e9; border-left: 4px solid #689f38; }
     .metric-card {
-        background-color: #f8f9fa;
+        background: #e0f7fa;
         padding: 1rem;
         border-radius: 0.5rem;
-        border: 1px solid #dee2e6;
+        border: 1px solid #80deea;
+        color: #0077b6;
+        font-weight: 600;
     }
     .role-badge {
         padding: 0.25rem 0.5rem;
         border-radius: 0.25rem;
-        font-size: 0.75rem;
+        font-size: 0.85rem;
         font-weight: bold;
+        background: #b2ebf2;
+        color: #0077b6;
     }
-    .role-authority { background-color: #e3f2fd; color: #1976d2; }
-    .role-ngo { background-color: #f3e5f5; color: #7b1fa2; }
-    .role-community { background-color: #e8f5e8; color: #388e3c; }
-    
-    /* Statistics Section */
-    .stats-container {
-        background: #f8f9fa;
-        padding: 2rem;
-        border-radius: 1rem;
-        margin: 2rem 0;
-    }
-    
-    .stat-item {
-        text-align: center;
-        padding: 1rem;
-    }
-    
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #2d3436;
-        margin-bottom: 0.5rem;
-    }
-    
-    .stat-label {
-        color: #636e72;
-        font-weight: 500;
-    }
-    
-    /* Navigation Enhancement */
     .nav-item {
         padding: 0.5rem;
         margin: 0.25rem 0;
         border-radius: 0.5rem;
-        transition: background-color 0.3s ease;
+        transition: background-color 0.3s;
     }
-    
     .nav-item:hover {
-        background-color: #f1f3f4;
+        background-color: #b2ebf2;
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #00b4d8;
+        margin-bottom: 0.5rem;
+    }
+    .stat-label {
+        color: #636e72;
+        font-weight: 500;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -252,6 +160,22 @@ def check_login(email, password, role):
             }
     return None
 
+def db_check_login(email, password, role):
+    collector = DataCollector()
+    users = collector.get_users()
+    for u in users:
+        if u[2] == email and u[3] == role:
+            # For demo, password is not stored; you can extend schema to store and check password
+            return {
+                '_id': f'user_{email}',
+                'name': u[1],
+                'email': email,
+                'role': role,
+                'location': {'coordinates': [72.8777, 19.0760]},
+                'points': u[4]
+            }
+    return None
+
 def add_user_to_db(user):
     collector = DataCollector()
     collector.add_user(
@@ -275,18 +199,19 @@ if 'logout_confirmed' not in st.session_state:
 
 if st.session_state.user is None:
     st.sidebar.subheader("🔐 Authentication")
-    
-    # Demo mode for hackathon
-    if st.sidebar.button("🚀 Quick Demo (No Login)", type="primary"):
-        st.session_state.user = {
-            '_id': 'demo_user_001',
-            'name': 'Demo User',
-            'email': 'demo@coastalguardian.com',
-            'role': 'authority',
-            'location': {'coordinates': [72.8777, 19.0760]},
-            'points': 0
-        }
-        st.rerun()
+    # Registration form
+    with st.sidebar.form("register_form"):
+        st.markdown("**New User Registration**")
+        reg_name = st.text_input("Name", key="reg_name")
+        reg_email = st.text_input("Email", key="reg_email")
+        reg_role = st.selectbox("Role", ["authority", "ngo", "community"], key="reg_role")
+        if st.form_submit_button("Register", type="primary"):
+            if reg_name and reg_email:
+                collector = DataCollector()
+                collector.add_user(reg_name, reg_email, reg_role)
+                st.success("Registration successful! You can now log in.")
+            else:
+                st.error("Please enter name and email.")
     
     st.sidebar.markdown("---")
     st.sidebar.subheader("📝 Login")
@@ -299,6 +224,8 @@ if st.session_state.user is None:
         if st.form_submit_button("🔐 Login", type="primary"):
             if email and password:
                 user = check_login(email, password, role)
+                if not user:
+                    user = db_check_login(email, password, role)
                 if user:
                     st.session_state.user = user
                     add_user_to_db(user)
