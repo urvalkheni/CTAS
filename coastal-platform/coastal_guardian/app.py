@@ -33,7 +33,24 @@ st.set_page_config(
 
 # Custom CSS
 st.markdown("""
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 <style>
+<<<<<<< HEAD
+    body, html, .main, .block-container {
+        font-family: 'Montserrat', sans-serif !important;
+        background: linear-gradient(135deg, #e0f7fa 0%, #80deea 100%);
+        color: #222;
+    }
+    .main-header, .hero-title {
+        font-family: 'Montserrat', sans-serif !important;
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: #0077b6;
+        text-shadow: 1px 1px 8px #b2ebf2;
+    }
+    .hero-section {
+        background: linear-gradient(135deg, #00b4d8 0%, #48cae4 100%);
+=======
     :root {
         --primary: #00b894;
         --accent: #00cec9;
@@ -73,10 +90,43 @@ st.markdown("""
     /* Hero Section */
     .hero-section {
         background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+>>>>>>> a886c1c33f52e1d2d2663b439351f8a7fd06aa26
         color: white;
         padding: 4rem 2rem;
         border-radius: 1rem;
         text-align: center;
+<<<<<<< HEAD
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .feature-card {
+        background: #ffffffcc;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        text-align: center;
+        margin-bottom: 2rem;
+        border: 1px solid #b2ebf2;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    .feature-title {
+        color: #0077b6;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    .feature-description {
+        color: #222;
+        font-size: 1.1rem;
+        line-height: 1.7;
+    }
+    .cta-section {
+        background: linear-gradient(135deg, #00b4d8 0%, #48cae4 100%);
+=======
         margin-bottom: 2rem;
         box-shadow: var(--shadow);
     }
@@ -133,6 +183,7 @@ st.markdown("""
     /* Logout Page */
     .logout-container {
         background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+>>>>>>> a886c1c33f52e1d2d2663b439351f8a7fd06aa26
         color: white;
         padding: 3rem 2rem;
         border-radius: 1rem;
@@ -140,6 +191,61 @@ st.markdown("""
         margin: 1.5rem 0;
         box-shadow: var(--shadow);
     }
+<<<<<<< HEAD
+    .cta-button {
+        background: #0077b6;
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        margin: 0.5rem;
+        min-width: 200px;
+        box-shadow: 0 2px 8px #b2ebf2;
+        transition: background 0.3s, color 0.3s;
+    }
+    .cta-button:hover {
+        background: #48cae4;
+        color: #0077b6;
+    }
+    .metric-card {
+        background: #e0f7fa;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #80deea;
+        color: #0077b6;
+        font-weight: 600;
+    }
+    .role-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.85rem;
+        font-weight: bold;
+        background: #b2ebf2;
+        color: #0077b6;
+    }
+    .nav-item {
+        padding: 0.5rem;
+        margin: 0.25rem 0;
+        border-radius: 0.5rem;
+        transition: background-color 0.3s;
+    }
+    .nav-item:hover {
+        background-color: #b2ebf2;
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #00b4d8;
+        margin-bottom: 0.5rem;
+    }
+    .stat-label {
+        color: #636e72;
+        font-weight: 500;
+    }
+=======
     .logout-icon { font-size: 3rem; margin-bottom: 0.5rem; }
     .logout-title { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
     .logout-message { font-size: 1.05rem; margin-bottom: 1.25rem; opacity: 0.95; }
@@ -183,6 +289,7 @@ st.markdown("""
     
     /* Charts and visualizations */
     .stPlotlyChart { border: 2px solid var(--border); border-radius: 0.5rem; padding: 1rem; background: white; }
+>>>>>>> a886c1c33f52e1d2d2663b439351f8a7fd06aa26
 </style>
 """, unsafe_allow_html=True)
 
@@ -205,6 +312,22 @@ def check_login(email, password, role):
                 'role': user['role'],
                 'location': {'coordinates': [72.8777, 19.0760]},
                 'points': 0
+            }
+    return None
+
+def db_check_login(email, password, role):
+    collector = DataCollector()
+    users = collector.get_users()
+    for u in users:
+        if u[2] == email and u[3] == role:
+            # For demo, password is not stored; you can extend schema to store and check password
+            return {
+                '_id': f'user_{email}',
+                'name': u[1],
+                'email': email,
+                'role': role,
+                'location': {'coordinates': [72.8777, 19.0760]},
+                'points': u[4]
             }
     return None
 
@@ -231,18 +354,19 @@ if 'logout_confirmed' not in st.session_state:
 
 if st.session_state.user is None:
     st.sidebar.subheader("🔐 Authentication")
-    
-    # Demo mode for hackathon
-    if st.sidebar.button("🚀 Quick Demo (No Login)", type="primary"):
-        st.session_state.user = {
-            '_id': 'demo_user_001',
-            'name': 'Demo User',
-            'email': 'demo@coastalguardian.com',
-            'role': 'authority',
-            'location': {'coordinates': [72.8777, 19.0760]},
-            'points': 0
-        }
-        st.rerun()
+    # Registration form
+    with st.sidebar.form("register_form"):
+        st.markdown("**New User Registration**")
+        reg_name = st.text_input("Name", key="reg_name")
+        reg_email = st.text_input("Email", key="reg_email")
+        reg_role = st.selectbox("Role", ["authority", "ngo", "community"], key="reg_role")
+        if st.form_submit_button("Register", type="primary"):
+            if reg_name and reg_email:
+                collector = DataCollector()
+                collector.add_user(reg_name, reg_email, reg_role)
+                st.success("Registration successful! You can now log in.")
+            else:
+                st.error("Please enter name and email.")
     
     st.sidebar.markdown("---")
     st.sidebar.subheader("📝 Login")
@@ -255,6 +379,8 @@ if st.session_state.user is None:
         if st.form_submit_button("🔐 Login", type="primary"):
             if email and password:
                 user = check_login(email, password, role)
+                if not user:
+                    user = db_check_login(email, password, role)
                 if user:
                     st.session_state.user = user
                     add_user_to_db(user)
