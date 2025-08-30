@@ -1,28 +1,23 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 
-// https://vite.dev/config/
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: 'dist',
-    sourcemap: false,
-    target: 'esnext',
     rollupOptions: {
+      // Disable native modules to prevent platform-specific issues
+      external: [],
       output: {
         manualChunks: undefined
       }
-    }
+    },
+    // Ensure we don't have platform-specific issues
+    target: 'es2020',
+    minify: 'esbuild'
   },
-  server: {
-    port: 5173,
-    host: true
-  },
-  preview: {
-    port: 4173,
-    host: true
-  },
+  // Add environment variable handling
   define: {
-    global: 'globalThis',
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
   }
 })
