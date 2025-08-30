@@ -1,0 +1,9 @@
+timestamp,parameter,value
+2025-08-29T10:00:00,tide_level,2.1
+2025-08-29T10:05:00,wind_speed,15.3
+2025-08-29T10:10:00,sea_temp,28.7
+2025-08-29T10:15:00,pollution_index,45.2
+2025-08-29T10:20:00,tide_level,2.4
+2025-08-29T10:25:00,wind_speed,16.1
+2025-08-29T10:30:00,sea_temp,29.0
+2025-08-29T10:35:00,pollution_index,47.8
