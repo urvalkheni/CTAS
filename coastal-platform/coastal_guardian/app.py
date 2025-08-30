@@ -16,6 +16,13 @@ try:
 except ImportError:
     FOLIUM_AVAILABLE = False
 
+# Try to import ML components, but handle gracefully if not available
+try:
+    import ml_anomaly_detection
+    ML_AVAILABLE = True
+except ImportError:
+    ML_AVAILABLE = False
+
 # Page configuration
 st.set_page_config(
     page_title="Coastal Guardian",
@@ -28,6 +35,7 @@ st.set_page_config(
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 <style>
+<<<<<<< HEAD
     body, html, .main, .block-container {
         font-family: 'Montserrat', sans-serif !important;
         background: linear-gradient(135deg, #e0f7fa 0%, #80deea 100%);
@@ -42,10 +50,52 @@ st.markdown("""
     }
     .hero-section {
         background: linear-gradient(135deg, #00b4d8 0%, #48cae4 100%);
+=======
+    :root {
+        --primary: #00b894;
+        --accent: #00cec9;
+        --bg: #ffffff;
+        --bg-alt: #f0f8ff;
+        --text: #2d3436;
+        --muted: #636e72;
+        --border: #74b9ff;
+        --shadow: 0 10px 30px rgba(0,0,0,0.08);
+        --success: #00b894;
+        --info: #00cec9;
+        --warning: #fdcb6e;
+        --danger: #e17055;
+    }
+
+    /* Layout container: tighten width and center */
+    .block-container {
+        max-width: 1200px;
+        padding-top: 1rem;
+    }
+
+    /* Top header bar for authenticated views */
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(120deg, var(--primary), var(--accent));
+        color: #fff;
+        padding: 1rem 1.25rem;
+        border-radius: 0.75rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 1.5rem;
+    }
+    .topbar .logo { font-weight: 700; letter-spacing: 0.2px; }
+    .topbar .tagline { opacity: 0.9; font-size: 0.95rem; }
+
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+>>>>>>> a886c1c33f52e1d2d2663b439351f8a7fd06aa26
         color: white;
         padding: 4rem 2rem;
         border-radius: 1rem;
         text-align: center;
+<<<<<<< HEAD
         margin-bottom: 3rem;
         box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
@@ -76,12 +126,72 @@ st.markdown("""
     }
     .cta-section {
         background: linear-gradient(135deg, #00b4d8 0%, #48cae4 100%);
+=======
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow);
+    }
+    .hero-title {
+        font-size: 3.25rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.25);
+    }
+    .hero-subtitle { font-size: 1.25rem; margin-bottom: 1.25rem; opacity: 0.95; }
+    .hero-description { font-size: 1.05rem; max-width: 780px; margin: 0 auto 1.5rem; line-height: 1.65; }
+
+    /* Generic Section/Card */
+    .section {
+        background: var(--bg);
+        border: 2px solid var(--border);
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        margin: 1rem 0 1.25rem 0;
+    }
+
+    /* Feature Cards */
+    .feature-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        text-align: center;
+        margin-bottom: 1.5rem;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        border: 2px solid var(--border);
+    }
+    .feature-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,0.12); }
+    .feature-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .feature-title { font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+    .feature-description { color: var(--muted); line-height: 1.6; }
+
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+        color: white;
+        padding: 2.25rem 1.5rem;
+        border-radius: 1rem;
+        text-align: center;
+        margin: 2rem 0;
+        box-shadow: var(--shadow);
+    }
+    .cta-button { background: white; color: var(--primary); padding: 0.85rem 1.5rem; border: none; border-radius: 0.5rem; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: all 0.25s ease; margin: 0.4rem; text-decoration: none; display: inline-block; min-width: 200px; }
+    .cta-button:hover { background: #f8f9fa; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+    .cta-button-secondary { background: transparent; color: white; border: 2px solid white; }
+    .cta-button-secondary:hover { background: white; color: var(--primary); }
+
+    /* Logout Page */
+    .logout-container {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+>>>>>>> a886c1c33f52e1d2d2663b439351f8a7fd06aa26
         color: white;
         padding: 3rem 2rem;
         border-radius: 1rem;
         text-align: center;
-        margin: 3rem 0;
+        margin: 1.5rem 0;
+        box-shadow: var(--shadow);
     }
+<<<<<<< HEAD
     .cta-button {
         background: #0077b6;
         color: white;
@@ -135,6 +245,51 @@ st.markdown("""
         color: #636e72;
         font-weight: 500;
     }
+=======
+    .logout-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+    .logout-title { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .logout-message { font-size: 1.05rem; margin-bottom: 1.25rem; opacity: 0.95; }
+
+    /* Alert cards with new theme */
+    .alert-critical { background-color: #ffe8e8; border-left: 4px solid var(--danger); }
+    .alert-high { background-color: #fff3e0; border-left: 4px solid var(--warning); }
+    .alert-moderate { background-color: #e8f5e8; border-left: 4px solid var(--success); }
+    .alert-low { background-color: #e8f5e8; border-left: 4px solid var(--info); }
+
+    /* Metric and role badges */
+    .metric-card { background-color: var(--bg-alt); padding: 0.85rem; border-radius: 0.5rem; border: 1px solid var(--border); }
+    .role-badge { padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 800; }
+    .role-authority { background-color: #e8f5e8; color: var(--success); }
+    .role-ngo { background-color: #e0f7fa; color: var(--info); }
+    .role-community { background-color: #e8f5e8; color: var(--success); }
+
+    /* Stats */
+    .stats-container { background: var(--bg-alt); padding: 1.5rem; border-radius: 1rem; margin: 1.25rem 0; border: 2px solid var(--border); }
+    .stat-item { text-align: center; padding: 0.75rem; }
+    .stat-number { font-size: 2rem; font-weight: 800; color: var(--text); margin-bottom: 0.25rem; }
+    .stat-label { color: var(--muted); font-weight: 600; }
+
+    /* Navigation hover */
+    .nav-item { padding: 0.5rem; margin: 0.25rem 0; border-radius: 0.5rem; transition: background-color 0.2s ease; }
+    .nav-item:hover { background-color: var(--bg-alt); }
+
+    /* Enhanced Typography */
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    h1, h2, h3, h4, h5, h6 { color: var(--text); font-weight: 700; }
+    p { color: var(--text); line-height: 1.6; }
+    
+    /* Streamlit specific improvements */
+    .stApp { background-color: var(--bg-alt); }
+    .main .block-container { background-color: var(--bg); border-radius: 1rem; padding: 2rem; box-shadow: var(--shadow); }
+    .stButton > button { background-color: var(--primary); color: white; border: none; border-radius: 0.5rem; padding: 0.75rem 1.5rem; font-weight: 600; }
+    .stButton > button:hover { background-color: var(--accent); transform: translateY(-2px); }
+    
+    /* Data tables */
+    .stDataFrame { border: 2px solid var(--border); border-radius: 0.5rem; }
+    
+    /* Charts and visualizations */
+    .stPlotlyChart { border: 2px solid var(--border); border-radius: 0.5rem; padding: 1rem; background: white; }
+>>>>>>> a886c1c33f52e1d2d2663b439351f8a7fd06aa26
 </style>
 """, unsafe_allow_html=True)
 
@@ -533,6 +688,17 @@ elif st.session_state.user is None:
 else:
     # Authenticated user interface
     user = st.session_state.user
+
+    # Top header bar for authenticated sections
+    st.markdown(
+        f"""
+        <div class="topbar">
+            <div class="logo">🌊 Coastal Guardian</div>
+            <div class="tagline">Real-time coastal intelligence • Signed in as <strong>{user['name']}</strong></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     
     if page == "🏠 Dashboard":
         st.header("📊 Dashboard")
@@ -561,7 +727,8 @@ else:
                             icon=folium.Icon(color='red', icon='warning-sign')).add_to(m)
                 folium.Marker([13.0827, 80.2707], popup="Chennai - Storm Warning", 
                             icon=folium.Icon(color='orange', icon='warning-sign')).add_to(m)
-                st_folium(m, width=800, height=400)
+                # Full-width map aligned to container
+                st_folium(m, width=1200, height=420)
             except Exception as e:
                 st.error(f"Map error: {e}")
                 st.info("Showing demo map data instead")
@@ -1018,3 +1185,40 @@ st.markdown("""
     <p>Built with ❤️ for coastal conservation | MVP Version 1.0.0</p>
 </div>
 """, unsafe_allow_html=True)
+
+# Main entry point for running the application
+def main():
+    """Main entry point for the Coastal Guardian application"""
+    print("🌊 Starting Coastal Guardian Application...")
+    print("=" * 60)
+    
+    try:
+        # Check if ML components are available
+        if ML_AVAILABLE:
+            print("✅ ML Anomaly Detection System: Available")
+        else:
+            print("⚠️ ML Anomaly Detection System: Not Available")
+        
+        # Check if Streamlit is available
+        try:
+            import streamlit
+            print("✅ Streamlit Web Interface: Available")
+        except ImportError:
+            print("❌ Streamlit Web Interface: Not Available")
+            return
+        
+        # Start the Streamlit application
+        print("🚀 Starting Streamlit web interface...")
+        print("📱 Open your browser and navigate to the displayed URL")
+        print("🌐 The application will automatically open in your default browser")
+        
+        # Note: In a real deployment, you would use:
+        # subprocess.run(["streamlit", "run", "app.py"])
+        
+    except Exception as e:
+        print(f"❌ Error starting application: {e}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    main()
