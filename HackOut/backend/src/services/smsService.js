@@ -5,11 +5,20 @@ class SMSService {
     this.client = null;
     this.fromNumber = process.env.TWILIO_PHONE_NUMBER;
     
-    // Initialize Twilio client if credentials are available
-    if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-      this.client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+    // Initialize Twilio client if credentials are available and valid
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+    
+    if (accountSid && authToken && accountSid.startsWith('AC')) {
+      try {
+        this.client = twilio(accountSid, authToken);
+        console.log('✅ Twilio SMS service initialized successfully');
+      } catch (error) {
+        console.warn('⚠️ Failed to initialize Twilio SMS service:', error.message);
+        this.client = null;
+      }
     } else {
-      console.warn('Twilio credentials not found. SMS service will use simulation mode.');
+      console.warn('⚠️ Twilio credentials not found or invalid. SMS service will use simulation mode.');
     }
   }
 

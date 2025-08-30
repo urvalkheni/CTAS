@@ -14,6 +14,7 @@ import CurrentMonitorRedux from './CurrentMonitorRedux';
 import WeatherAlerts from './WeatherAlerts';
 import SatelliteMapWorking from './SatelliteMapWorking';
 import CommunityReports from './CommunityReports';
+import AdvancedAnalytics from './AdvancedAnalytics';
 
 const InteractiveDashboard = ({ onLogout }) => {
   const dispatch = useDispatch();
@@ -179,12 +180,7 @@ const InteractiveDashboard = ({ onLogout }) => {
         return <CommunityReports />;
       
       case 'analytics':
-        return (
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Analytics Dashboard</h3>
-            <p className="text-slate-400">Advanced analytics and reporting features coming soon...</p>
-          </div>
-        );
+        return <AdvancedAnalytics />;
       
       default:
         return (
