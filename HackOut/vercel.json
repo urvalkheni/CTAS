@@ -4,11 +4,6 @@
   "outputDirectory": "frontend/dist",
   "installCommand": "npm run install:frontend",
   "framework": "vite",
-  "functions": {
-    "app/**/*.js": {
-      "runtime": "nodejs22.x"
-    }
-  },
   "build": {
     "env": {
       "NODE_VERSION": "22",
