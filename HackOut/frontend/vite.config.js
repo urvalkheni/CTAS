@@ -6,18 +6,36 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
-      // Disable native modules to prevent platform-specific issues
+      // Disable native modules and platform-specific optimizations
       external: [],
       output: {
-        manualChunks: undefined
+        manualChunks: undefined,
+        // Ensure consistent output across platforms
+        format: 'es',
+        entryFileNames: '[name].[hash].js',
+        chunkFileNames: '[name].[hash].js',
+        assetFileNames: '[name].[hash].[ext]'
+      },
+      // Disable platform-specific optimizations
+      treeshake: {
+        moduleSideEffects: false
       }
     },
-    // Ensure we don't have platform-specific issues
-    target: 'es2020',
-    minify: 'esbuild'
+    // Use esbuild for better compatibility
+    target: 'es2015',
+    minify: 'esbuild',
+    // Disable source maps for production
+    sourcemap: false,
+    // Ensure consistent build output
+    outDir: 'dist',
+    assetsDir: 'assets'
   },
   // Add environment variable handling
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
+  },
+  // Optimize for production builds
+  optimizeDeps: {
+    include: ['react', 'react-dom']
   }
 })
