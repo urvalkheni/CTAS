@@ -12,7 +12,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "vercel-build": "npm run build"
+    "vercel-build": "npm run build",
+    "postinstall": "npm rebuild @rollup/rollup-linux-x64-gnu || true"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
