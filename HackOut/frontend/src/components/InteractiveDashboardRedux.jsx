@@ -6,7 +6,7 @@ import {
   ChevronDown, Smartphone, Menu, X 
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
-import { useAuth, useUI, useAlerts, useDashboard, useConnectionStatus } from '../store/hooks';
+import { useAuth, useUI, useDashboard, useConnectionStatus } from '../store/hooks';
 import { setActiveTab, toggleSidebar, openModal } from '../store/slices/uiSlice';
 import { logoutUser } from '../store/slices/authSlice';
 import DashboardProvider from './DashboardProvider';
@@ -21,13 +21,11 @@ const InteractiveDashboard = ({ onLogout }) => {
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
 
   const { user } = useAuth();
-  const { alerts, unreadCount } = useAlerts();
   const { isConnected, syncStatus } = useConnectionStatus();
   const { 
     activeTab, 
     sidebarCollapsed, 
-    isLoading, 
-    unreadAlerts 
+    isLoading
   } = useDashboard();
 
   const handleTabChange = (tab) => {
@@ -56,7 +54,6 @@ const InteractiveDashboard = ({ onLogout }) => {
       overview: Activity,
       currents: Waves,
       weather: CloudRain,
-      alerts: AlertTriangle,
       satellite: Satellite,
       reports: Users,
       analytics: TrendingUp,
@@ -104,10 +101,6 @@ const InteractiveDashboard = ({ onLogout }) => {
                   Quick Stats
                 </h3>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-400">Active Alerts</span>
-                    <span className="text-white font-semibold">{unreadAlerts}</span>
-                  </div>
                   <div className="flex justify-between items-center">
                     <span className="text-slate-400">Connection</span>
                     <span className={`font-semibold ${isConnected ? 'text-green-400' : 'text-red-400'}`}>
@@ -179,30 +172,6 @@ const InteractiveDashboard = ({ onLogout }) => {
       case 'weather':
         return <WeatherAlerts />;
       
-      case 'alerts':
-        return (
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Alert Management</h3>
-            <div className="space-y-4">
-              {alerts.slice(0, 10).map((alert, index) => (
-                <div key={alert.id || index} className="p-4 bg-slate-700/30 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <span className="text-white font-medium">{alert.title || 'Alert'}</span>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      alert.severity === 'high' ? 'bg-red-500/20 text-red-400' :
-                      alert.severity === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-blue-500/20 text-blue-400'
-                    }`}>
-                      {alert.severity || 'low'}
-                    </span>
-                  </div>
-                  <p className="text-slate-400 text-sm mt-1">{alert.message || 'No details available'}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      
       case 'satellite':
         return <SatelliteMapWorking />;
       
@@ -249,11 +218,6 @@ const InteractiveDashboard = ({ onLogout }) => {
                   className="relative p-2 bg-slate-700/50 rounded-lg"
                 >
                   <Bell className="w-5 h-5 text-white" />
-                  {unreadAlerts > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {unreadAlerts > 9 ? '9+' : unreadAlerts}
-                    </span>
-                  )}
                 </button>
                 <div className="relative">
                   <button
@@ -323,7 +287,6 @@ const InteractiveDashboard = ({ onLogout }) => {
                 { id: 'overview', label: 'Overview', icon: Activity },
                 { id: 'currents', label: 'Currents', icon: Waves },
                 { id: 'weather', label: 'Weather', icon: CloudRain },
-                { id: 'alerts', label: 'Alerts', icon: AlertTriangle },
                 { id: 'satellite', label: 'Satellite', icon: Satellite },
                 { id: 'reports', label: 'Reports', icon: Users },
                 { id: 'analytics', label: 'Analytics', icon: TrendingUp },
@@ -342,11 +305,6 @@ const InteractiveDashboard = ({ onLogout }) => {
                     <Icon className="w-5 h-5" />
                     {(!sidebarCollapsed || isMobileView) && (
                       <span>{tab.label}</span>
-                    )}
-                    {tab.id === 'alerts' && unreadAlerts > 0 && (!sidebarCollapsed || isMobileView) && (
-                      <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-1">
-                        {unreadAlerts > 9 ? '9+' : unreadAlerts}
-                      </span>
                     )}
                   </button>
                 );
@@ -421,11 +379,6 @@ const InteractiveDashboard = ({ onLogout }) => {
                       className="relative p-2 bg-slate-700/50 rounded-lg hover:bg-slate-600/50 transition-colors"
                     >
                       <Bell className="w-5 h-5 text-slate-300" />
-                      {unreadAlerts > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                          {unreadAlerts > 9 ? '9+' : unreadAlerts}
-                        </span>
-                      )}
                     </button>
                   </div>
                 </div>
