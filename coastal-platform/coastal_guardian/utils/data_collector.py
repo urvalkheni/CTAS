@@ -22,8 +22,35 @@ class DataCollector:
                 value REAL
             )
         ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                email TEXT UNIQUE,
+                role TEXT,
+                points INTEGER DEFAULT 0
+            )
+        ''')
         conn.commit()
         conn.close()
+
+    def add_user(self, name, email, role, points=0):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT OR IGNORE INTO users (name, email, role, points)
+            VALUES (?, ?, ?, ?)
+        ''', (name, email, role, points))
+        conn.commit()
+        conn.close()
+
+    def get_users(self):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute('SELECT id, name, email, role, points FROM users')
+        users = cursor.fetchall()
+        conn.close()
+        return users
 
     def fetch_mock_sensor_data(self):
         now = datetime.now()
