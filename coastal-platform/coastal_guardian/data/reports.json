@@ -1,80 +1,64 @@
 {
   "reports": [
     {
-      "_id": "f72bed3b-45ab-46ba-bd3e-3c8292de82ea",
-      "userId": "demo_user_001",
-      "type": "mangrove_cut",
-      "description": "Large area of mangroves cleared for construction",
-      "photoUrl": "reports/demo_mangrove_cut.jpg",
-      "location": {
-        "type": "Point",
-        "coordinates": [
-          72.8777,
-          19.076
-        ]
-      },
-      "status": "verify",
-      "verifierId": null,
-      "score": 85,
-      "createdAt": "2025-08-30T08:31:35.111074",
-      "updatedAt": "2025-08-30T08:37:15.219835"
+      "id": "report_001",
+      "user": "CoastalGuard_001",
+      "timestamp": "2024-01-15 14:30:00",
+      "type": "Dumping",
+      "location": "Chennai Coast",
+      "lat": 13.0827,
+      "lng": 80.2707,
+      "description": "Plastic waste dumping observed near Marina Beach",
+      "photo_url": "reports/20250830_083754_WhatsApp Image 2025-08-30 at 02.58.26_5744a527.jpg",
+      "severity": "high"
     },
     {
-      "_id": "73663930-3517-4fde-a434-80aa54990c6f",
-      "userId": "demo_user_001",
-      "type": "mangrove_cut",
-      "description": "Large area of mangroves cleared for construction",
-      "photoUrl": "reports/demo_mangrove_cut.jpg",
-      "location": {
-        "type": "Point",
-        "coordinates": [
-          72.8777,
-          19.076
-        ]
-      },
-      "status": "verify",
-      "verifierId": null,
-      "score": 85,
-      "createdAt": "2025-08-30T08:31:49.762731",
-      "updatedAt": "2025-08-30T08:38:40.087216"
+      "id": "report_002", 
+      "user": "MangroveWatcher_002",
+      "timestamp": "2024-01-14 09:15:00",
+      "type": "Cutting",
+      "location": "Mumbai Gateway",
+      "lat": 19.0760,
+      "lng": 72.8777,
+      "description": "Unauthorized mangrove cutting for construction",
+      "photo_url": "",
+      "severity": "critical"
     },
     {
-      "_id": "ecb16102-487d-4eb4-8d1c-d8eb4051c832",
-      "userId": "demo_user_001",
-      "type": "mangrove_cut",
-      "description": "Large area of mangroves cleared for construction",
-      "photoUrl": "reports/demo_mangrove_cut.jpg",
-      "location": {
-        "type": "Point",
-        "coordinates": [
-          72.8777,
-          19.076
-        ]
-      },
-      "status": "verify",
-      "verifierId": null,
-      "score": 85,
-      "createdAt": "2025-08-30T08:32:21.974708",
-      "updatedAt": "2025-08-30T08:38:42.042984"
+      "id": "report_003",
+      "user": "EcoVolunteer_003", 
+      "timestamp": "2024-01-13 16:45:00",
+      "type": "Pollution",
+      "location": "Goa Beach",
+      "lat": 15.2993,
+      "lng": 74.1240,
+      "description": "Oil spill detected near Calangute Beach",
+      "photo_url": "",
+      "severity": "moderate"
     },
     {
-      "_id": "bab29575-2e3f-444e-a6ba-e6c680ba3d0a",
-      "userId": "c3f3d459-4e56-460b-badd-d4278f1b8c6d",
-      "type": "pollution",
-      "description": "",
-      "photoUrl": "reports/20250830_083754_WhatsApp Image 2025-08-30 at 02.58.26_5744a527.jpg",
-      "location": {
-        "type": "Point",
-        "coordinates": [
-          72.8777,
-          19.076
-        ]
-      },
-      "status": "verify",
-      "verifierId": null,
-      "score": 64.90405544309803,
-      "createdAt": "2025-08-30T08:37:54.754140",
-      "updatedAt": "2025-08-30T08:38:43.366931"
+      "id": "report_004",
+      "user": "CoastalGuard_001",
+      "timestamp": "2024-01-12 11:20:00",
+      "type": "Dumping",
+      "location": "Kerala Coast",
+      "lat": 10.8505,
+      "lng": 76.2711,
+      "description": "Industrial waste dumping in backwaters",
+      "photo_url": "",
+      "severity": "high"
+    },
+    {
+      "id": "report_005",
+      "user": "MangroveWatcher_002",
+      "timestamp": "2024-01-11 08:30:00",
+      "type": "Cutting",
+      "location": "Sundarbans",
+      "lat": 21.9497,
+      "lng": 89.1833,
+      "description": "Illegal mangrove cutting for firewood",
+      "photo_url": "",
+      "severity": "critical"
     }
   ]
 }
