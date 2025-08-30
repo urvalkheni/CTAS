@@ -6,6 +6,7 @@ import json
 import os
 from datetime import datetime, timedelta
 import numpy as np
+from utils.data_collector import DataCollector
 
 # Try to import folium, but handle gracefully if not available
 try:
@@ -26,6 +27,143 @@ st.set_page_config(
 # Custom CSS
 st.markdown("""
 <style>
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4rem 2rem;
+        border-radius: 1rem;
+        text-align: center;
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .hero-subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+    
+    .hero-description {
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+        line-height: 1.6;
+    }
+    
+    /* Feature Cards */
+    .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        text-align: center;
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #e1e5e9;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .feature-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+    
+    .feature-description {
+        color: #6c757d;
+        line-height: 1.6;
+    }
+    
+    /* CTA Buttons */
+    .cta-section {
+        background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 1rem;
+        text-align: center;
+        margin: 3rem 0;
+    }
+    
+    .cta-button {
+        background: white;
+        color: #0984e3;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 0.5rem;
+        text-decoration: none;
+        display: inline-block;
+        min-width: 200px;
+    }
+    
+    .cta-button:hover {
+        background: #f8f9fa;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .cta-button-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+    
+    .cta-button-secondary:hover {
+        background: white;
+        color: #0984e3;
+    }
+    
+    /* Logout Page */
+    .logout-container {
+        background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+        color: white;
+        padding: 4rem 2rem;
+        border-radius: 1rem;
+        text-align: center;
+        margin: 2rem 0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .logout-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+    
+    .logout-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .logout-message {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+    
+    /* Existing Styles */
     .main-header {
         font-size: 3rem;
         font-weight: bold;
@@ -52,6 +190,43 @@ st.markdown("""
     .role-authority { background-color: #e3f2fd; color: #1976d2; }
     .role-ngo { background-color: #f3e5f5; color: #7b1fa2; }
     .role-community { background-color: #e8f5e8; color: #388e3c; }
+    
+    /* Statistics Section */
+    .stats-container {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 1rem;
+        margin: 2rem 0;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2d3436;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: #636e72;
+        font-weight: 500;
+    }
+    
+    /* Navigation Enhancement */
+    .nav-item {
+        padding: 0.5rem;
+        margin: 0.25rem 0;
+        border-radius: 0.5rem;
+        transition: background-color 0.3s ease;
+    }
+    
+    .nav-item:hover {
+        background-color: #f1f3f4;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -77,13 +252,26 @@ def check_login(email, password, role):
             }
     return None
 
+def add_user_to_db(user):
+    collector = DataCollector()
+    collector.add_user(
+        name=user.get('name', 'Unknown'),
+        email=user.get('email', ''),
+        role=user.get('role', 'community'),
+        points=user.get('points', 0)
+    )
+
 # Sidebar - Authentication & Navigation
 st.sidebar.title("🌊 Coastal Guardian")
 st.sidebar.markdown("---")
 
-# Authentication
+# Session state initialization
 if 'user' not in st.session_state:
     st.session_state.user = None
+if 'page' not in st.session_state:
+    st.session_state.page = 'landing'
+if 'logout_confirmed' not in st.session_state:
+    st.session_state.logout_confirmed = False
 
 if st.session_state.user is None:
     st.sidebar.subheader("🔐 Authentication")
@@ -108,12 +296,12 @@ if st.session_state.user is None:
         email = st.text_input("Email", placeholder="Enter your email")
         password = st.text_input("Password", type="password", placeholder="Enter your password")
         role = st.selectbox("Role", ["authority", "ngo", "community"])
-        
         if st.form_submit_button("🔐 Login", type="primary"):
             if email and password:
                 user = check_login(email, password, role)
                 if user:
                     st.session_state.user = user
+                    add_user_to_db(user)
                     st.rerun()
                 else:
                     st.error("❌ Invalid credentials. Try demo accounts:")
@@ -137,9 +325,27 @@ else:
     </div>
     """, unsafe_allow_html=True)
     
-    if st.sidebar.button("Logout"):
-        st.session_state.user = None
-        st.rerun()
+    # Enhanced logout with confirmation
+    col1, col2 = st.sidebar.columns([1, 1])
+    
+    with col1:
+        if st.button("🚪 Logout", type="secondary", use_container_width=True):
+            st.session_state.page = 'logout_confirm'
+            st.rerun()
+    
+    with col2:
+        if st.button("ℹ️ Help", use_container_width=True):
+            st.sidebar.info("""
+            **Need Help?**
+            
+            📧 support@coastalguardian.com
+            📞 +1-800-COASTAL
+            
+            **Quick Tips:**
+            - Use Quick Demo for instant access
+            - Check leaderboard for community impact
+            - Submit reports to earn points
+            """)
     
     st.sidebar.markdown("---")
     
@@ -149,83 +355,253 @@ else:
         ["🏠 Dashboard", "🚨 Threats & Alerts", "📊 Reports", "📈 Trends", "🏆 Leaderboard", "⚙️ Settings"]
     )
 
-# Main content based on authentication
-if st.session_state.user is None:
-    # Landing page
-    st.markdown('<h1 class="main-header">🌊 Coastal Guardian</h1>', unsafe_allow_html=True)
-    st.markdown("### AI-Powered Coastal Monitoring & Community Engagement Platform")
+# Handle logout confirmation page
+if st.session_state.get('page') == 'logout_confirm' and st.session_state.user is not None:
+    user = st.session_state.user
     
-    # Login call-to-action
-    st.markdown("---")
-    st.markdown("### 🔐 Get Started")
+    # Logout confirmation page
+    st.markdown("""
+    <div class="logout-container">
+        <div class="logout-icon">🚪</div>
+        <div class="logout-title">Logout Confirmation</div>
+        <div class="logout-message">
+            Thank you for using Coastal Guardian, {user_name}!<br>
+            Are you sure you want to logout?
+        </div>
+    </div>
+    """.format(user_name=user['name']), unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
+    # Session summary
+    col1, col2, col3 = st.columns([1, 2, 1])
     
-    with col1:
+    with col2:
         st.markdown("""
-        #### 🚀 Quick Demo
-        Experience the platform instantly with pre-loaded data and mock scenarios.
+        <div style="background: #f8f9fa; padding: 2rem; border-radius: 1rem; margin: 2rem 0; text-align: center;">
+            <h4 style="color: #2d3436; margin-bottom: 1rem;">📊 Your Session Summary</h4>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #0984e3;">{user_points}</div>
+                    <div style="color: #636e72;">Points Earned</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #00b894;">{session_time}</div>
+                    <div style="color: #636e72;">Session Time</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: #fdcb6e;">{user_role}</div>
+                    <div style="color: #636e72;">Role</div>
+                </div>
+            </div>
+        </div>
+        """.format(
+            user_points=user['points'],
+            session_time="15 min",  # Demo value
+            user_role=user['role'].title()
+        ), unsafe_allow_html=True)
         
-        **Perfect for:**
-        - Hackathon demos
-        - First-time users
-        - Quick exploration
-        """)
-        if st.button("🚀 Start Quick Demo", type="primary", use_container_width=True):
-            st.session_state.user = {
-                '_id': 'demo_user_001',
-                'name': 'Demo User',
-                'email': 'demo@coastalguardian.com',
-                'role': 'authority',
-                'location': {'coordinates': [72.8777, 19.0760]},
-                'points': 0
-            }
+        # Logout buttons
+        col_btn1, col_btn2 = st.columns(2)
+        
+        with col_btn1:
+            if st.button("🚪 Confirm Logout", type="primary", use_container_width=True):
+                # Clear session and show logout success
+                st.session_state.user = None
+                st.session_state.page = 'logout_success'
+                st.rerun()
+        
+        with col_btn2:
+            if st.button("⬅️ Cancel", use_container_width=True):
+                st.session_state.page = 'dashboard'
+                st.rerun()
+        
+        # Quick actions before logout
+        st.markdown("---")
+        st.markdown("""
+        <div style="text-align: center; color: #6c757d; margin-top: 2rem;">
+            <p><strong>Before you go:</strong></p>
+            <p>📧 Check your notifications • 📊 Review your impact • 🌊 Keep protecting our coasts!</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+# Handle logout success page
+elif st.session_state.get('page') == 'logout_success':
+    st.markdown("""
+    <div class="logout-container">
+        <div class="logout-icon">✨</div>
+        <div class="logout-title">Successfully Logged Out</div>
+        <div class="logout-message">
+            Thank you for being a Coastal Guardian!<br>
+            Your contributions help protect our precious coastlines.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Return to landing page
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        if st.button("🏠 Return to Home", type="primary", use_container_width=True):
+            st.session_state.page = 'landing'
             st.rerun()
-    
-    with col2:
-        st.markdown("""
-        #### 🔐 Full Login
-        Access role-based features with proper authentication.
         
-        **Demo Accounts:**
-        - **Authority**: `admin@coastalguardian.com` / `password123`
-        - **NGO**: `ngo@coastalguardian.com` / `password123`
-        - **Community**: `community@coastalguardian.com` / `password123`
-        """)
-        st.info("💡 Use the sidebar to login with these credentials!")
-    
-    st.markdown("---")
-    
-    # Features overview
-    st.markdown("### 🌟 Platform Features")
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
         st.markdown("""
-        #### 🚨 Real-time Threat Detection
-        - AI-powered anomaly detection
-        - Multi-source data integration
-        - Instant alert generation
-        - Severity scoring (0-100)
-        """)
+        <div style="text-align: center; margin-top: 2rem;">
+            <p style="color: #6c757d;">Come back anytime to continue protecting our coasts!</p>
+            <p style="color: #6c757d; margin-top: 1rem;"><small>Click the button above to return to the home page</small></p>
+        </div>
+        """, unsafe_allow_html=True)
+
+# Main content based on authentication
+elif st.session_state.user is None:
+    # Enhanced Landing Page
+    
+    # Hero Section
+    st.markdown("""
+    <div class="hero-section">
+        <div class="hero-title">🌊 Coastal Guardian</div>
+        <div class="hero-subtitle">AI-Powered Coastal Protection</div>
+        <div class="hero-description">
+            Protecting coastlines through real-time monitoring, community engagement, 
+            and AI-powered threat detection. Join thousands of coastal guardians 
+            making a difference.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Call-to-Action Buttons
+    col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        st.markdown("""
-        #### 👥 Community Engagement
-        - Citizen science reporting
-        - Gamified participation
-        - Location-based alerts
-        - Leaderboard system
-        """)
+        col_btn1, col_btn2 = st.columns(2)
+        
+        with col_btn1:
+            if st.button("🚀 Start Quick Demo", type="primary", use_container_width=True):
+                st.session_state.user = {
+                    '_id': 'demo_user_001',
+                    'name': 'Demo User',
+                    'email': 'demo@coastalguardian.com',
+                    'role': 'authority',
+                    'location': {'coordinates': [72.8777, 19.0760]},
+                    'points': 0
+                }
+                st.rerun()
+        
+        with col_btn2:
+            st.markdown("""
+            <div style="text-align: center; margin-top: 0.5rem;">
+                <small style="color: #6c757d;">💡 Use sidebar to login with demo credentials</small>
+            </div>
+            """, unsafe_allow_html=True)
     
-    with col3:
+    # Statistics Section
+    st.markdown("""
+    <div class="stats-container">
+        <h3 style="text-align: center; margin-bottom: 2rem; color: #2d3436;">📊 Platform Impact</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
+    
+    with stat_col1:
         st.markdown("""
-        #### 📊 Comprehensive Analytics
-        - Interactive dashboards
-        - Trend analysis
-        - Export capabilities
-        - Real-time maps
-        """)
+        <div class="stat-item">
+            <div class="stat-number">1,247</div>
+            <div class="stat-label">Active Monitors</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with stat_col2:
+        st.markdown("""
+        <div class="stat-item">
+            <div class="stat-number">89</div>
+            <div class="stat-label">Threats Detected</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with stat_col3:
+        st.markdown("""
+        <div class="stat-item">
+            <div class="stat-number">2,156</div>
+            <div class="stat-label">Reports Submitted</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with stat_col4:
+        st.markdown("""
+        <div class="stat-item">
+            <div class="stat-number">45km</div>
+            <div class="stat-label">Coastline Protected</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Feature Cards
+    st.markdown("<br>", unsafe_allow_html=True)
+    feature_col1, feature_col2, feature_col3 = st.columns(3)
+    
+    with feature_col1:
+        st.markdown("""
+        <div class="feature-card">
+            <div class="feature-icon">🚨</div>
+            <div class="feature-title">Real-time Threat Detection</div>
+            <div class="feature-description">
+                AI-powered monitoring system that detects coastal threats like storm surges, 
+                abnormal tide levels, and pollution incidents in real-time.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with feature_col2:
+        st.markdown("""
+        <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <div class="feature-title">Community Engagement</div>
+            <div class="feature-description">
+                Empowering local communities through citizen science, gamified reporting, 
+                and collaborative coastal conservation efforts.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with feature_col3:
+        st.markdown("""
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <div class="feature-title">Comprehensive Analytics</div>
+            <div class="feature-description">
+                Interactive dashboards, trend analysis, and data visualization tools 
+                for informed decision-making and coastal management.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Demo Accounts Info
+    st.markdown("""
+    <div class="cta-section">
+        <h3 style="margin-bottom: 1rem;">🔐 Demo Accounts Available</h3>
+        <p style="margin-bottom: 2rem; opacity: 0.9;">Try different user roles to experience the full platform</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 2rem;">
+            <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
+                <h4>🏛️ Authority User</h4>
+                <p><strong>Email:</strong> admin@coastalguardian.com<br>
+                <strong>Password:</strong> password123</p>
+                <small>Access: Full system control, alert management, settings</small>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
+                <h4>🏢 NGO Representative</h4>
+                <p><strong>Email:</strong> ngo@coastalguardian.com<br>
+                <strong>Password:</strong> password123</p>
+                <small>Access: Reporting, analytics, community coordination</small>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
+                <h4>👨‍👩‍👧‍👦 Community Member</h4>
+                <p><strong>Email:</strong> community@coastalguardian.com<br>
+                <strong>Password:</strong> password123</p>
+                <small>Access: Report submission, leaderboard, local alerts</small>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 else:
     # Authenticated user interface
