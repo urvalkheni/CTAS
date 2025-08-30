@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
-import Alert from "@/models/Alert";
+import { connectDB } from "../../../lib/mongodb";
+import Alert from "../../../models/Alert";
 
 export async function POST(req: Request) {
   try {
