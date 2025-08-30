@@ -1,4 +1,4 @@
-# Coastal Guardian - Complete System Requirements
+# Coastal Guardian - Application Requirements
 # Core web framework
 streamlit==1.28.1
 streamlit-folium==0.13.0
@@ -24,18 +24,9 @@ requests>=2.31.0
 
 # Image processing
 Pillow==10.1.0
-<<<<<<< HEAD
-numpy==1.25.2
-altair==5.1.2
-=======
-ultralytics==8.0.196
 
 # Communication services
 twilio==8.10.0
 
-# Database and storage
-sqlite3
-
 # Development and utilities
 python-dotenv>=1.0.0
->>>>>>> 0cb90a9 (fix)
