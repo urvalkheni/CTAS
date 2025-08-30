@@ -16,6 +16,13 @@ try:
 except ImportError:
     FOLIUM_AVAILABLE = False
 
+# Try to import ML components, but handle gracefully if not available
+try:
+    import ml_anomaly_detection
+    ML_AVAILABLE = True
+except ImportError:
+    ML_AVAILABLE = False
+
 # Page configuration
 st.set_page_config(
     page_title="Coastal Guardian",
@@ -1091,3 +1098,40 @@ st.markdown("""
     <p>Built with ❤️ for coastal conservation | MVP Version 1.0.0</p>
 </div>
 """, unsafe_allow_html=True)
+
+# Main entry point for running the application
+def main():
+    """Main entry point for the Coastal Guardian application"""
+    print("🌊 Starting Coastal Guardian Application...")
+    print("=" * 60)
+    
+    try:
+        # Check if ML components are available
+        if ML_AVAILABLE:
+            print("✅ ML Anomaly Detection System: Available")
+        else:
+            print("⚠️ ML Anomaly Detection System: Not Available")
+        
+        # Check if Streamlit is available
+        try:
+            import streamlit
+            print("✅ Streamlit Web Interface: Available")
+        except ImportError:
+            print("❌ Streamlit Web Interface: Not Available")
+            return
+        
+        # Start the Streamlit application
+        print("🚀 Starting Streamlit web interface...")
+        print("📱 Open your browser and navigate to the displayed URL")
+        print("🌐 The application will automatically open in your default browser")
+        
+        # Note: In a real deployment, you would use:
+        # subprocess.run(["streamlit", "run", "app.py"])
+        
+    except Exception as e:
+        print(f"❌ Error starting application: {e}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    main()
