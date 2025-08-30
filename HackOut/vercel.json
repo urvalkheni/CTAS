@@ -10,11 +10,6 @@
       }
     }
   ],
-  "functions": {
-    "app/**/*": {
-      "runtime": "nodejs22.x"
-    }
-  },
   "routes": [
     {
       "handle": "filesystem"
