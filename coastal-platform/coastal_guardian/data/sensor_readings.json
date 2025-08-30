@@ -1,0 +1,64 @@
+{
+  "readings": [
+    {
+      "_id": "4e383fc3-0990-4723-b18a-140b01254743",
+      "sourceId": "demo_sensor_001",
+      "type": "tide",
+      "value": 4.2,
+      "unit": "m",
+      "metadata": {
+        "location": "Mumbai",
+        "station": "Gateway"
+      },
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          72.8777,
+          19.076
+        ]
+      },
+      "timestamp": "2025-08-30T08:31:35.097180",
+      "readingId": "a2eeecb4-77bf-4b0c-a0a1-f2a83ec7883f"
+    },
+    {
+      "_id": "881c521c-696a-4386-a61e-7b3e4dbce9f7",
+      "sourceId": "demo_sensor_001",
+      "type": "tide",
+      "value": 4.2,
+      "unit": "m",
+      "metadata": {
+        "location": "Mumbai",
+        "station": "Gateway"
+      },
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          72.8777,
+          19.076
+        ]
+      },
+      "timestamp": "2025-08-30T08:31:49.760934",
+      "readingId": "a3019bbc-79a4-46ca-bf48-c64c6cb729bc"
+    },
+    {
+      "_id": "f5d1e810-a084-4c9f-8e46-c3de6dd07805",
+      "sourceId": "demo_sensor_001",
+      "type": "tide",
+      "value": 4.2,
+      "unit": "m",
+      "metadata": {
+        "location": "Mumbai",
+        "station": "Gateway"
+      },
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          72.8777,
+          19.076
+        ]
+      },
+      "timestamp": "2025-08-30T08:32:21.973247",
+      "readingId": "5cb70da7-07ca-4796-85da-885ad1aca282"
+    }
+  ]
+}

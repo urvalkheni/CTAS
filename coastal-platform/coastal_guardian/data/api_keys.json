@@ -1,0 +1,19 @@
+{
+  "api_keys": {
+    "cg_9112dc37e86f400696fd7196d052852c": {
+      "user_id": "c3f3d459-4e56-460b-badd-d4278f1b8c6d",
+      "created_at": "2025-08-30T08:31:35.087344",
+      "active": true
+    },
+    "cg_14f0977efafe4c1d97c98a3e5624ae44": {
+      "user_id": "c3f3d459-4e56-460b-badd-d4278f1b8c6d",
+      "created_at": "2025-08-30T08:31:49.750614",
+      "active": true
+    },
+    "cg_cbef8f1abe5a4655b58c53c3c28635fd": {
+      "user_id": "c3f3d459-4e56-460b-badd-d4278f1b8c6d",
+      "created_at": "2025-08-30T08:32:21.963019",
+      "active": true
+    }
+  }
+}
