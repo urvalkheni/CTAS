@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Lock, User, Eye, EyeOff, Shield, UserPlus, LogIn, ArrowLeft, Building, Phone, MapPin } from 'lucide-react';
 import axiosInstance from '../services/axiosInstance';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { loginUser, registerUser, setCredentials } from '../store/slices/authSlice';
 
 const AuthSystem = ({ onAuthSuccess, onBack }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -51,8 +53,11 @@ const AuthSystem = ({ onAuthSuccess, onBack }) => {
             organization: "",
           });
           
-          // Navigate to dashboard
-          onAuthSuccess(result.user);
+          // Set session start time for logout page statistics
+          localStorage.setItem('session_start', Date.now().toString());
+          
+          // Navigate to dashboard using React Router
+          navigate('/dashboard');
         }
       } else {
         // Handle registration with Redux
@@ -78,7 +83,7 @@ const AuthSystem = ({ onAuthSuccess, onBack }) => {
           
           // Wait a moment for the toast to be visible, then redirect to landing page
           setTimeout(() => {
-            onBack(); // This will take user back to landing page
+            navigate('/'); // Navigate back to landing page
           }, 1500);
         }
       }
@@ -315,7 +320,7 @@ const AuthSystem = ({ onAuthSuccess, onBack }) => {
           {/* Back Button */}
           <div className="mt-4">
             <button
-              onClick={onBack}
+              onClick={() => navigate('/')}
               className="w-full text-blue-300 hover:text-white transition-colors text-sm"
             >
               ← Back to Landing Page

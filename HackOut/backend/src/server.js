@@ -8,7 +8,8 @@ const path = require('path');
 const connectDB = require('./lib/db.js')
 
 
-require('dotenv').config({ path: path.join(__dirname, '../../.env') });
+// Load environment variables from .env file
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 
 const app = express();

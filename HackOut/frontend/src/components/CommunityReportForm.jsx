@@ -5,14 +5,14 @@ import {
   Thermometer, Eye, Navigation, Save, Share2, Bell
 } from 'lucide-react';
 
-const CommunityReportForm = ({ onClose, onSubmit }) => {
+const CommunityReportForm = ({ onClose, onSubmit, initialData = null }) => {
   const [formData, setFormData] = useState({
-    reportType: 'weather',
-    severity: 'medium',
-    title: '',
-    description: '',
-    location: '',
-    coordinates: { lat: null, lng: null },
+    reportType: initialData?.reportType || 'weather',
+    severity: initialData?.severity || 'medium',
+    title: initialData?.title || '',
+    description: initialData?.description || '',
+    location: initialData?.location || '',
+    coordinates: initialData?.coordinates || { lat: null, lng: null },
     contactInfo: {
       name: '',
       phone: '',
@@ -20,10 +20,10 @@ const CommunityReportForm = ({ onClose, onSubmit }) => {
       organization: ''
     },
     weatherConditions: {
-      windSpeed: '',
-      waveHeight: '',
-      temperature: '',
-      visibility: '',
+      windSpeed: initialData?.weatherConditions?.windSpeed || '',
+      waveHeight: initialData?.weatherConditions?.waveHeight || '',
+      temperature: initialData?.weatherConditions?.temperature || '',
+      visibility: initialData?.weatherConditions?.visibility || '',
       precipitation: '',
       pressure: ''
     },

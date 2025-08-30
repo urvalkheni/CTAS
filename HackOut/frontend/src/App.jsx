@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import AuthSystem from './components/AuthSystem';
 import InteractiveDashboardRedux from './components/InteractiveDashboardRedux';
@@ -8,12 +9,44 @@ import { useUI, useAuth } from './store/hooks';
 import { setCurrentView, setAppLoading } from './store/slices/uiSlice';
 import { initializeAuth } from './store/slices/authSlice';
 
-function App() {
+// ProtectedRoute component to handle authentication
+const ProtectedRoute = ({ children }) => {
+  const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: location.pathname }, replace: true });
+    }
+  }, [isAuthenticated, navigate, location]);
+  
+  if (!isAuthenticated) {
+    return null; // Render nothing while redirecting
+  }
+  
+  return children;
+};
+
+// Main App component
+// Main App Wrapper
+function AppWithRouter() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+}
+
+// App Content with access to router hooks
+function AppContent() {
   const dispatch = useDispatch();
-  const { currentView, loading } = useUI();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { loading } = useUI();
   const { user, isAuthenticated } = useAuth();
 
-  console.log('🌊 CTAS App rendering with Redux...', { currentView, user, isAuthenticated, loading: loading.app });
+  console.log('🌊 CTAS App rendering with Redux...', { user, isAuthenticated, loading: loading.app });
 
   // Initialize app on load
   useEffect(() => {
@@ -24,63 +57,15 @@ function App() {
       console.log('🌊 About to dispatch initializeAuth...');
       dispatch(initializeAuth());
       
-      // Set initial view based on auth status
-      const storedUser = localStorage.getItem('ctas_user');
-      const storedToken = localStorage.getItem('ctas_token');
-      
-      console.log('🌊 Checking auth...', { 
-        storedUser: storedUser ? 'exists' : 'null', 
-        storedToken: storedToken ? 'exists' : 'null',
-        isAuthenticated,
-        user: user?.name || 'null'
-      });
-      
-      if (storedUser && storedToken && isAuthenticated) {
-        dispatch(setCurrentView('dashboard'));
-      } else {
-        dispatch(setCurrentView('landing'));
-      }
-      
       // App initialization complete
       dispatch(setAppLoading(false));
       console.log('🌊 App loading set to false');
     };
 
     initializeApp();
-  }, [dispatch, isAuthenticated]);
+  }, [dispatch]);
 
-  const handleAuthSuccess = (userData) => {
-    // Set session start time for logout page statistics
-    localStorage.setItem('session_start', Date.now().toString());
-    dispatch(setCurrentView('dashboard'));
-  };
-
-  const handleLogoutRequest = () => {
-    dispatch(setCurrentView('logout'));
-  };
-
-  const handleConfirmLogout = () => {
-    dispatch(setCurrentView('logout_success'));
-  };
-
-  const handleLogoutComplete = () => {
-    localStorage.removeItem('ctas_user');
-    localStorage.removeItem('ctas_token');
-    localStorage.removeItem('session_start');
-    dispatch(setCurrentView('landing'));
-  };
-
-  const handleCancelLogout = () => {
-    dispatch(setCurrentView('dashboard'));
-  };
-
-  const handleGetStarted = () => {
-    dispatch(setCurrentView('auth'));
-  };
-
-  const handleBackToLanding = () => {
-    dispatch(setCurrentView('landing'));
-  };
+  // We've replaced all the handlers with direct navigate() calls in the Route components
 
   // Loading screen
   // Loading screen
@@ -100,48 +85,66 @@ function App() {
     );
   }
 
-  // Route based on current view
-  switch (currentView) {
-    case 'auth':
-      return (
-        <AuthSystem 
-          onAuthSuccess={handleAuthSuccess}
-          onBack={handleBackToLanding}
-        />
-      );
-    
-    case 'dashboard':
-      return (
-        <InteractiveDashboardRedux 
-          user={user}
-          onLogout={handleLogoutRequest}
-        />
-      );
-    
-    case 'logout':
-      return (
-        <LogoutPage
-          user={user}
-          onConfirmLogout={handleConfirmLogout}
-          onCancel={handleCancelLogout}
-        />
-      );
-    
-    case 'logout_success':
-      return (
-        <LogoutSuccessPage
-          onReturnHome={handleLogoutComplete}
-        />
-      );
-    
-    case 'landing':
-    default:
-      return (
-        <LandingPage 
-          onGetStarted={handleGetStarted}
-        />
-      );
-  }
+  return (
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<LandingPage onGetStarted={() => navigate('/login')} />} />
+        <Route path="/login" element={<AuthSystem />} />
+        <Route path="/logout-success" element={<LogoutSuccessPage onReturnHome={() => {
+          localStorage.removeItem('ctas_user');
+          localStorage.removeItem('ctas_token');
+          localStorage.removeItem('session_start');
+          navigate('/');
+        }} />} />
+        
+        {/* Protected routes */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <InteractiveDashboardRedux user={user} onLogout={() => navigate('/logout')} />
+          </ProtectedRoute>
+        } />
+        <Route path="/logout" element={
+          <ProtectedRoute>
+            <LogoutPage 
+              user={user} 
+              onConfirmLogout={() => navigate('/logout-success')} 
+              onCancel={() => navigate('/dashboard')} 
+            />
+          </ProtectedRoute>
+        } />
+        
+        {/* Protected tab routes for direct access */}
+        <Route path="/dashboard/currents" element={
+          <ProtectedRoute>
+            <InteractiveDashboardRedux user={user} onLogout={() => navigate('/logout')} initialTab="currents" />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/weather" element={
+          <ProtectedRoute>
+            <InteractiveDashboardRedux user={user} onLogout={() => navigate('/logout')} initialTab="weather" />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/dashboard/satellite" element={
+          <ProtectedRoute>
+            <InteractiveDashboardRedux user={user} onLogout={() => navigate('/logout')} initialTab="satellite" />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/reports" element={
+          <ProtectedRoute>
+            <InteractiveDashboardRedux user={user} onLogout={() => navigate('/logout')} initialTab="reports" />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/analytics" element={
+          <ProtectedRoute>
+            <InteractiveDashboardRedux user={user} onLogout={() => navigate('/logout')} initialTab="analytics" />
+          </ProtectedRoute>
+        } />
+
+        {/* Fallback for any other routes */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+  );
 }
 
-export default App;
+export default AppWithRouter;

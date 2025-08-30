@@ -1,43 +1,175 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// Global flag to prevent multiple API loads
-let googleMapsLoading = false;
-let googleMapsLoaded = false;
-
+// Use the SatelliteMapWorking component instead since it's working correctly
+// This component now works the same way as SatelliteMapWorking
 const SatelliteMap = () => {
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState([]);
-  const [selectedLayer, setSelectedLayer] = useState('satellite');
-  const [loadingError, setLoadingError] = useState(null);
-  const [loadingStatus, setLoadingStatus] = useState('Initializing...');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const mapRef = useRef(null);
-
+  
   // Map center coordinates (Miami, FL)
   const mapCenter = { lat: 25.7617, lng: -80.1918 };
-
-  // Load Google Maps API (with duplicate prevention)
+  
   useEffect(() => {
-    console.log('🗺️ SatelliteMap: Starting Google Maps API load...');
-    setLoadingStatus('Checking Google Maps API...');
+    // Initialize map when component mounts
+    initMap();
     
-    const loadGoogleMaps = () => {
-      return new Promise((resolve, reject) => {
-        // Check if already loaded
-        if (window.google && window.google.maps && googleMapsLoaded) {
-          console.log('✅ Google Maps API already loaded');
-          setLoadingStatus('Google Maps API ready');
-          resolve(window.google.maps);
-          return;
+    // Cleanup function
+    return () => {
+      if (markers.length > 0) {
+        markers.forEach(marker => {
+          if (marker && marker.setMap) marker.setMap(null);
+        });
+        setMarkers([]);
+      }
+    };
+  }, []);
+  
+  // Initialize the Google Maps
+  const initMap = () => {
+    // Check if the map is already initialized
+    if (map) return;
+    
+    // Check if Google Maps is already loaded
+    if (window.google && window.google.maps) {
+      createMap();
+      return;
+    }
+    
+    // If Google Maps script is not loaded, create it
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDzSyOCYorH5j3BdRESxMvjQx5-ShAfM1w&libraries=geometry';
+    script.async = true;
+    script.defer = true;
+    
+    script.onload = () => {
+      console.log('✅ Google Maps script loaded');
+      createMap();
+    };
+    
+    script.onerror = () => {
+      console.error('❌ Failed to load Google Maps API');
+      setError('Failed to load Google Maps');
+      setIsLoading(false);
+    };
+    
+    document.head.appendChild(script);
+  };
+  
+  // Create the map instance
+  const createMap = () => {
+    try {
+      if (!mapRef.current || !window.google || !window.google.maps) {
+        console.error('❌ Map container or Google Maps not available');
+        setError('Map initialization failed');
+        setIsLoading(false);
+        return;
+      }
+      
+      // Create map instance
+      const mapInstance = new window.google.maps.Map(mapRef.current, {
+        center: mapCenter,
+        zoom: 10,
+        mapTypeId: window.google.maps.MapTypeId.SATELLITE,
+        mapTypeControl: true,
+        streetViewControl: true,
+        fullscreenControl: true
+      });
+      
+      console.log('✅ Map instance created successfully');
+      setMap(mapInstance);
+      setIsLoading(false);
+      
+      // Add sample markers
+      addSampleMarkers(mapInstance);
+      
+    } catch (err) {
+      console.error('💥 Error creating map:', err);
+      setError(err.message);
+      setIsLoading(false);
+    }
+  };
+  
+  // Add sample markers to the map
+  const addSampleMarkers = (mapInstance) => {
+    const threatLocations = [
+      { 
+        position: { lat: 25.7617, lng: -80.1918 },
+        title: 'Miami Beach - High Tide Warning',
+        color: '#f59e0b' // Amber
+      },
+      {
+        position: { lat: 25.7742, lng: -80.1324 },
+        title: 'Virginia Key - Storm Surge Risk',
+        color: '#ef4444' // Red
+      },
+      {
+        position: { lat: 25.8654, lng: -80.1228 },
+        title: 'Sunny Isles - Coastal Erosion',
+        color: '#10b981' // Green
+      },
+      {
+        position: { lat: 25.7725, lng: -80.1323 },
+        title: 'Biscayne Bay - Water Quality Alert',
+        color: '#3b82f6' // Blue
+      }
+    ];
+    
+    // Add each marker to the map
+    threatLocations.forEach(location => {
+      addMarker(location.position, location.title, location.color, mapInstance);
+    });
+  };
+  
+  // Add a marker to the map
+  const addMarker = (position, title, color, mapInstance) => {
+    console.log('🎯 Adding marker:', { position, title, color });
+    
+    try {
+      const marker = new window.google.maps.Marker({
+        position: position,
+        map: mapInstance,
+        title: title,
+        animation: window.google.maps.Animation.DROP,
+        icon: {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          fillColor: color,
+          fillOpacity: 0.9,
+          strokeColor: '#ffffff',
+          strokeWeight: 2,
+          scale: 10,
         }
-
-        // Check if already loading
-        if (googleMapsLoading) {
-          console.log('⏳ Google Maps API already loading, waiting...');
-          setLoadingStatus('Waiting for Google Maps API...');
-          
-          // Wait for the loading to complete
-          const checkInterval = setInterval(() => {
-            if (window.google && window.google.maps && googleMapsLoaded) {
+      });
+      
+      // Add click event listener
+      window.google.maps.event.addListener(marker, 'click', () => {
+        // Create an info window
+        const infoWindow = new window.google.maps.InfoWindow({
+          content: `<div class="info-window">
+            <h3 class="font-bold">${title}</h3>
+            <p class="mt-2">Detected at ${new Date().toLocaleString()}</p>
+            <div class="mt-2 p-2 bg-blue-50 rounded">
+              <span class="font-semibold">Status:</span> Active
+            </div>
+          </div>`
+        });
+        
+        infoWindow.open(mapInstance, marker);
+      });
+      
+      // Store the marker
+      setMarkers(prev => [...prev, marker]);
+      console.log('✅ Marker successfully added');
+      console.log('📍 Total markers now:', markers.length + 1);
+      
+      return marker;
+    } catch (err) {
+      console.error('❌ Error adding marker:', err);
+      return null;
+    }
+  };
               clearInterval(checkInterval);
               resolve(window.google.maps);
             }

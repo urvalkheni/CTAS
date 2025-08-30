@@ -1,37 +1,40 @@
-// Redux-enabled Interactive Dashboard
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  Activity, AlertTriangle, Satellite, CloudRain, Waves, TrendingUp, 
-  Users, MapPin, RefreshCw, Bell, Settings, LogOut, User as UserIcon, 
+  Activity, Satellite, CloudRain, Waves, BarChart, 
+  Users, MapPin, RefreshCw, Settings, LogOut, User as UserIcon, 
   ChevronDown, Smartphone, Menu, X 
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
-import { useAuth, useUI, useAlerts, useDashboard, useConnectionStatus } from '../store/hooks';
+import { useAuth, useUI, useDashboard, useConnectionStatus } from '../store/hooks';
 import { setActiveTab, toggleSidebar, openModal } from '../store/slices/uiSlice';
 import { logoutUser } from '../store/slices/authSlice';
 import DashboardProvider from './DashboardProvider';
 import CurrentMonitorRedux from './CurrentMonitorRedux';
-import WeatherAlerts from './WeatherAlerts';
 import WeatherWidget from './WeatherWidget';
 import SatelliteMapWorking from './SatelliteMapWorking';
 import CommunityReports from './CommunityReports';
-import SatelliteMap from './SatelliteMap';
-import { useEffect } from 'react';
+import ChatbotWidget from './ChatbotWidget';
+import AnalyticsPage from './AnalyticsPage';
 
-const InteractiveDashboard = ({ onLogout }) => {
+const InteractiveDashboard = ({ onLogout, initialTab = 'overview' }) => {
   const dispatch = useDispatch();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
 
   const { user, isAuthenticated } = useAuth();
-  const { alerts, unreadCount } = useAlerts();
   const { isConnected, syncStatus } = useConnectionStatus();
   const { 
     activeTab, 
     sidebarCollapsed, 
-    isLoading, 
-    unreadAlerts 
+    isLoading
   } = useDashboard();
+  
+  // Set initial tab from props if provided
+  useEffect(() => {
+    if (initialTab) {
+      dispatch(setActiveTab(initialTab));
+    }
+  }, [initialTab, dispatch]);
 
   // Function to get user initials
   const getUserInitials = (name) => {
@@ -46,6 +49,8 @@ const InteractiveDashboard = ({ onLogout }) => {
 
   const handleTabChange = (tab) => {
     dispatch(setActiveTab(tab));
+    // Update URL without full page reload
+    window.history.pushState({}, '', `/dashboard/${tab === 'overview' ? '' : tab}`);
   };
 
   const handleSidebarToggle = () => {
@@ -70,7 +75,6 @@ const InteractiveDashboard = ({ onLogout }) => {
       overview: Activity,
       currents: Waves,
       weather: CloudRain,
-      alerts: AlertTriangle,
       satellite: Satellite,
       reports: Users,
       analytics: TrendingUp,
@@ -91,20 +95,10 @@ const InteractiveDashboard = ({ onLogout }) => {
                     <Satellite className="w-6 h-6 text-green-400 mr-2" />
                     Satellite Map
                   </h3>
-                  <div className="text-sm text-slate-400">Real-time coastal monitoring</div>
+                  <div className="text-sm text-slate-400">India's Coastal Areas Monitoring</div>
                 </div>
                 <div className="h-[720px]">
-                  <SatelliteMap 
-                    data={{
-                      coordinates: { lat: 19.0760, lng: 72.8777 },
-                      zoomLevel: 10,
-                      threats: [],
-                      weather: {}
-                    }}
-                    showControls={true}
-                    showLegend={true}
-                    height="100%"
-                  />
+                  <SatelliteMapWorking />
                 </div>
               </div>
             </div>
@@ -118,10 +112,6 @@ const InteractiveDashboard = ({ onLogout }) => {
                   Quick Stats
                 </h3>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-400">Active Alerts</span>
-                    <span className="text-white font-semibold">{unreadAlerts}</span>
-                  </div>
                   <div className="flex justify-between items-center">
                     <span className="text-slate-400">Connection</span>
                     <span className={`font-semibold ${isConnected ? 'text-green-400' : 'text-red-400'}`}>
@@ -154,27 +144,14 @@ const InteractiveDashboard = ({ onLogout }) => {
                   </div>
                   <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-3">
                     <div className="flex items-center text-red-400 text-sm">
-                      <AlertTriangle className="w-4 h-4 mr-2" />
+                      <RefreshCw className="w-4 h-4 mr-2" />
                       Error: Failed to fetch
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Weather Alerts - Compact */}
-              <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-4">
-                <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
-                  <CloudRain className="w-5 h-5 text-green-400 mr-2" />
-                  Weather Alerts
-                </h3>
-                <div className="bg-teal-500/20 border border-teal-500/30 rounded-lg p-4 text-center">
-                  <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Bell className="w-4 h-4 text-green-400" />
-                  </div>
-                  <div className="text-green-400 font-semibold mb-1">All Clear</div>
-                  <div className="text-slate-400 text-sm">No active weather alerts for your area.</div>
-                </div>
-              </div>
+
             </div>
           </div>
         );
@@ -193,107 +170,79 @@ const InteractiveDashboard = ({ onLogout }) => {
       case 'weather':
         return <WeatherWidget />;
       
-      case 'alerts':
+      case 'satellite':
+        // Use SatelliteMapWorking showing Indian coastal areas
         return (
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Alert Management</h3>
-            <div className="space-y-4">
-              {alerts.slice(0, 10).map((alert, index) => (
-                <div key={alert.id || index} className="p-4 bg-slate-700/30 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <span className="text-white font-medium">{alert.title || 'Alert'}</span>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      alert.severity === 'high' ? 'bg-red-500/20 text-red-400' :
-                      alert.severity === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-blue-500/20 text-blue-400'
-                    }`}>
-                      {alert.severity || 'low'}
-                    </span>
-                  </div>
-                  <p className="text-slate-400 text-sm mt-1">{alert.message || 'No details available'}</p>
-                </div>
-              ))}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white flex items-center">
+                <Satellite className="w-6 h-6 text-green-400 mr-2" />
+                India's Coastal Monitoring
+              </h3>
+              <div className="text-sm text-slate-400">Real-time satellite view</div>
+            </div>
+            <div className="h-[720px]">
+              <SatelliteMapWorking />
             </div>
           </div>
         );
       
-      case 'satellite':
-        return <SatelliteMapWorking />;
-      
       case 'reports':
         return <CommunityReports />;
-      
+        
       case 'analytics':
-        return (
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Analytics Dashboard</h3>
-            <p className="text-slate-400">Advanced analytics and reporting features coming soon...</p>
-          </div>
-        );
-      
+        return <AnalyticsPage />;
+        
       default:
         return (
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Welcome to CTAS</h3>
-            <p className="text-slate-400">Select a tab to view specific data and controls.</p>
+            <h3 className="text-lg font-semibold text-white mb-4">Overview</h3>
+            <p className="text-slate-400">Select a tab to view data</p>
           </div>
         );
     }
   };
 
+  // Handle window resize for responsive layout
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
     <DashboardProvider>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
-        {/* Mobile Header */}
-        {isMobileView && (
-          <div className="lg:hidden bg-slate-800/90 backdrop-blur-sm border-b border-slate-700/50 p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={handleSidebarToggle}
-                  className="p-2 bg-slate-700/50 rounded-lg"
-                >
-                  {sidebarCollapsed ? <Menu className="w-5 h-5 text-white" /> : <X className="w-5 h-5 text-white" />}
-                </button>
-                <h1 className="text-xl font-bold text-white">CTAS</h1>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleOpenNotifications}
-                  className="relative p-2 bg-slate-700/50 rounded-lg"
-                >
-                  <Bell className="w-5 h-5 text-white" />
-                  {unreadAlerts > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {unreadAlerts > 9 ? '9+' : unreadAlerts}
-                    </span>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="flex">
-          {/* Sidebar */}
-          <div className={`${isMobileView ? 'fixed inset-y-0 left-0 z-40' : 'relative'} ${sidebarCollapsed && isMobileView ? '-translate-x-full' : 'translate-x-0'} transition-transform duration-300 bg-slate-800/90 backdrop-blur-sm border-r border-slate-700/50 ${sidebarCollapsed && !isMobileView ? 'w-16' : 'w-64'}`}>
-            {/* Desktop Header */}
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 relative">
+        {/* Sidebar */}
+        <div className={`fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out ${sidebarCollapsed && !isMobileView ? 'w-20' : 'w-72'} ${isMobileView && sidebarCollapsed ? '-translate-x-full' : 'translate-x-0'}`}>
+          {/* Sidebar Content */}
+          <div className="h-full bg-slate-800/50 backdrop-blur-sm border-r border-slate-700/50 flex flex-col overflow-hidden">
+            {/* Sidebar Header */}
             {!isMobileView && (
-              <div className="p-6 border-b border-slate-700/50">
+              <div className="p-4 border-b border-slate-700/50">
                 <div className="flex items-center justify-between">
-                  <div className={`flex items-center gap-3 ${sidebarCollapsed ? 'justify-center' : ''}`}>
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                      <span className="text-white font-bold">🌊</span>
+                  <div className={`flex items-center ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-2xl"></span>
                     </div>
                     {!sidebarCollapsed && (
-                      <h1 className="text-xl font-bold text-white">CTAS</h1>
+                      <div className="ml-3">
+                        <h2 className="text-white font-bold text-lg">CTAS</h2>
+                        <p className="text-slate-400 text-xs">Coastal Monitoring</p>
+                      </div>
                     )}
                   </div>
                   <button
                     onClick={handleSidebarToggle}
                     className="p-1 hover:bg-slate-700/50 rounded"
                   >
-                    <ChevronDown className={`w-4 h-4 text-slate-400 transform transition-transform ${sidebarCollapsed ? 'rotate-90' : '-rotate-90'}`} />
+                    <ChevronDown className={`w-6 h-6 text-slate-400 transform transition-transform ${sidebarCollapsed ? 'rotate-90' : '-rotate-90'}`} />
                   </button>
                 </div>
               </div>
@@ -305,10 +254,9 @@ const InteractiveDashboard = ({ onLogout }) => {
                 { id: 'overview', label: 'Overview', icon: Activity },
                 { id: 'currents', label: 'Currents', icon: Waves },
                 { id: 'weather', label: 'Weather', icon: CloudRain },
-                { id: 'alerts', label: 'Alerts', icon: AlertTriangle },
                 { id: 'satellite', label: 'Satellite', icon: Satellite },
                 { id: 'reports', label: 'Reports', icon: Users },
-                { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+                { id: 'analytics', label: 'Analytics', icon: BarChart },
               ].map((tab) => {
                 const Icon = tab.icon;
                 return (
@@ -321,14 +269,9 @@ const InteractiveDashboard = ({ onLogout }) => {
                         : 'text-slate-300 hover:bg-slate-700/50'
                     } ${sidebarCollapsed && !isMobileView ? 'justify-center' : ''}`}
                   >
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-7 h-7" />
                     {(!sidebarCollapsed || isMobileView) && (
                       <span>{tab.label}</span>
-                    )}
-                    {tab.id === 'alerts' && unreadAlerts > 0 && (!sidebarCollapsed || isMobileView) && (
-                      <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-1">
-                        {unreadAlerts > 9 ? '9+' : unreadAlerts}
-                      </span>
                     )}
                   </button>
                 );
@@ -336,7 +279,7 @@ const InteractiveDashboard = ({ onLogout }) => {
             </nav>
 
             {/* Desktop User Menu */}
-            {!isMobileView && user && isAuthenticated && (
+            {!isMobileView && (
               <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700/50">
                 <div className="relative user-menu-container">
                   <button
@@ -344,12 +287,12 @@ const InteractiveDashboard = ({ onLogout }) => {
                     className={`w-full flex items-center gap-3 p-3 text-slate-300 hover:bg-slate-700/50 rounded-lg ${sidebarCollapsed ? 'justify-center' : ''}`}
                   >
                     <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full text-white font-semibold text-xs">
-                      {getUserInitials(user?.name)}
+                      {user && isAuthenticated ? getUserInitials(user?.name) : 'G'}
                     </div>
                     {!sidebarCollapsed && (
                       <>
-                        <span className="flex-1 text-left">{user?.name || 'User'}</span>
-                        <ChevronDown className="w-4 h-4" />
+                        <span className="flex-1 text-left">{user?.name || 'Guest User'}</span>
+                        <ChevronDown className="w-5 h-5" />
                       </>
                     )}
                   </button>
@@ -365,14 +308,14 @@ const InteractiveDashboard = ({ onLogout }) => {
                           onClick={handleOpenSettings}
                           className="w-full flex items-center gap-2 p-2 text-slate-300 hover:bg-slate-700/50 hover:text-white rounded transition-colors duration-200"
                         >
-                          <Settings className="w-4 h-4" />
+                          <Settings className="w-5 h-5" />
                           Settings
                         </button>
                         <button
                           onClick={handleLogout}
                           className="w-full flex items-center gap-2 p-2 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded transition-all duration-200 mt-1 group"
                         >
-                          <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                          <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
                           <span className="font-medium">Logout</span>
                         </button>
                       </div>
@@ -383,7 +326,7 @@ const InteractiveDashboard = ({ onLogout }) => {
             )}
 
             {/* Mobile User Menu */}
-            {isMobileView && user && isAuthenticated && (
+            {isMobileView && (
               <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700/50">
                 <div className="relative user-menu-container">
                   <button
@@ -391,10 +334,10 @@ const InteractiveDashboard = ({ onLogout }) => {
                     className="w-full flex items-center gap-3 p-3 text-slate-300 hover:bg-slate-700/50 rounded-lg"
                   >
                     <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full text-white font-semibold text-xs">
-                      {getUserInitials(user?.name)}
+                      {user && isAuthenticated ? getUserInitials(user?.name) : 'G'}
                     </div>
-                    <span className="flex-1 text-left">{user?.name || 'User'}</span>
-                    <ChevronDown className="w-4 h-4" />
+                    <span className="flex-1 text-left">{user?.name || 'Guest User'}</span>
+                    <ChevronDown className="w-5 h-5" />
                   </button>
                   
                   {showUserMenu && (
@@ -408,14 +351,14 @@ const InteractiveDashboard = ({ onLogout }) => {
                           onClick={handleOpenSettings}
                           className="w-full flex items-center gap-2 p-2 text-slate-300 hover:bg-slate-700/50 hover:text-white rounded transition-colors duration-200"
                         >
-                          <Settings className="w-4 h-4" />
+                          <Settings className="w-5 h-5" />
                           Settings
                         </button>
                         <button
                           onClick={handleLogout}
                           className="w-full flex items-center gap-2 p-2 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded transition-all duration-200 mt-1 group"
                         >
-                          <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                          <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
                           <span className="font-medium">Logout</span>
                         </button>
                       </div>
@@ -425,35 +368,26 @@ const InteractiveDashboard = ({ onLogout }) => {
               </div>
             )}
           </div>
+        </div>
 
-          {/* Main Content */}
-          <div className="flex-1 flex flex-col min-h-screen">
-            {/* Header */}
-            {!isMobileView && (
-              <header className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50 p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-2xl font-bold text-white capitalize">{activeTab}</h2>
-                    <p className="text-slate-400">Real-time coastal threat monitoring</p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`}></div>
-                      <span className="text-slate-300 text-sm">
-                        {isConnected ? 'Connected' : 'Disconnected'}
-                      </span>
+        {/* Main Content */}
+        <div className={`transition-all duration-300 ${sidebarCollapsed && !isMobileView ? 'ml-20' : 'ml-0 md:ml-72'}`}>
+          <div className="min-h-screen flex flex-col relative">
+            {/* Mobile Header */}
+            {isMobileView && (
+              <header className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50 p-4 flex items-center justify-between sticky top-0 z-30">
+                <div className="flex items-center">
+                  <button
+                    onClick={handleSidebarToggle}
+                    className="p-2 mr-3 hover:bg-slate-700/50 rounded-lg"
+                  >
+                    {sidebarCollapsed ? <Menu className="w-6 h-6 text-white" /> : <X className="w-6 h-6 text-white" />}
+                  </button>
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-lg"></span>
                     </div>
-                    <button
-                      onClick={handleOpenNotifications}
-                      className="relative p-2 bg-slate-700/50 rounded-lg hover:bg-slate-600/50 transition-colors"
-                    >
-                      <Bell className="w-5 h-5 text-slate-300" />
-                      {unreadAlerts > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                          {unreadAlerts > 9 ? '9+' : unreadAlerts}
-                        </span>
-                      )}
-                    </button>
+                    <h2 className="text-white font-bold text-lg ml-2">CTAS</h2>
                   </div>
                 </div>
               </header>
@@ -482,6 +416,9 @@ const InteractiveDashboard = ({ onLogout }) => {
             onClick={handleSidebarToggle}
           />
         )}
+
+        {/* Floating Chatbot Widget */}
+        <ChatbotWidget />
       </div>
     </DashboardProvider>
   );

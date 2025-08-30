@@ -88,6 +88,12 @@ CTAS/
 - **React Router**: Client-side routing
 - **Axios**: HTTP client for API calls
 
+## 🔑 API Credentials & Environment Setup
+
+For security reasons, API credentials should be stored in environment variables.
+
+See [ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md) for detailed instructions on setting up your environment variables and API credentials.
+
 ### Backend
 - **Node.js**: JavaScript runtime
 - **Express.js**: Web application framework

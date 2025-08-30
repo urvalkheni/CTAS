@@ -19,12 +19,11 @@ const SatelliteMapWorking = () => {
 
     // Load Google Maps script
     const script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDzSyOCYorH5j3BdRESxMvjQx5-ShAfM1w&callback=initGoogleMap&libraries=geometry';
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDzSyOCYorH5j3BdRESxMvjQx5-ShAfM1w&libraries=geometry';
     script.async = true;
     script.defer = true;
     
-    // Create global callback
-    window.initGoogleMap = () => {
+    script.onload = () => {
       initMap();
     };
     
@@ -47,9 +46,17 @@ const SatelliteMapWorking = () => {
     if (!mapRef.current) return;
     
     try {
-      const mapInstance = new google.maps.Map(mapRef.current, {
-        center: { lat: 25.7617, lng: -80.1918 }, // Miami default
-        zoom: 10,
+      // Use window.google instead of google to avoid undefined errors
+      if (!window.google || !window.google.maps) {
+        console.error('Google Maps API not available');
+        setError('Google Maps API not available');
+        setIsLoading(false);
+        return;
+      }
+      
+      const mapInstance = new window.google.maps.Map(mapRef.current, {
+        center: { lat: 20.5937, lng: 78.9629 }, // Center on India
+        zoom: 5,
         mapTypeId: google.maps.MapTypeId.SATELLITE,
         mapTypeControl: true,
         streetViewControl: true,
@@ -63,13 +70,8 @@ const SatelliteMapWorking = () => {
       setMap(mapInstance);
       setIsLoading(false);
       
-      // Add default Miami marker
-      addMarker(
-        { lat: 25.7617, lng: -80.1918 },
-        'Miami, FL - Default Location',
-        '#2563eb',
-        mapInstance
-      );
+      // Add Indian coastal areas
+      addIndianCoastalAreas(mapInstance);
       
       // Try to get user's current location
       getUserLocation(mapInstance);
@@ -78,6 +80,90 @@ const SatelliteMapWorking = () => {
       setError('Failed to initialize map: ' + err.message);
       setIsLoading(false);
     }
+  };
+
+  const addIndianCoastalAreas = (mapInstance) => {
+    // Array of major Indian coastal areas with coordinates
+    const indianCoastalAreas = [
+      { 
+        position: { lat: 18.9256, lng: 72.8245 }, 
+        title: 'Mumbai', 
+        description: 'Maharashtra\'s coastal capital with significant port facilities',
+        color: '#e53935' // Red
+      },
+      { 
+        position: { lat: 13.0827, lng: 80.2707 }, 
+        title: 'Chennai', 
+        description: 'Capital of Tamil Nadu with one of India\'s largest ports',
+        color: '#fb8c00' // Orange
+      },
+      { 
+        position: { lat: 22.5726, lng: 88.3639 }, 
+        title: 'Kolkata', 
+        description: 'Port city on the Bay of Bengal delta',
+        color: '#43a047' // Green
+      },
+      { 
+        position: { lat: 15.4989, lng: 73.8278 }, 
+        title: 'Goa', 
+        description: 'Popular coastal state with beautiful beaches',
+        color: '#1e88e5' // Blue
+      },
+      { 
+        position: { lat: 9.9252, lng: 76.2673 }, 
+        title: 'Kochi', 
+        description: 'Major port city in Kerala with historic significance',
+        color: '#8e24aa' // Purple
+      },
+      { 
+        position: { lat: 17.6868, lng: 83.2185 }, 
+        title: 'Visakhapatnam', 
+        description: 'Major port and industrial center in Andhra Pradesh',
+        color: '#d81b60' // Pink
+      },
+      { 
+        position: { lat: 11.9416, lng: 79.8083 }, 
+        title: 'Pondicherry', 
+        description: 'Former French colony with distinctive coastal architecture',
+        color: '#00897b' // Teal
+      },
+      { 
+        position: { lat: 16.5062, lng: 80.6480 }, 
+        title: 'Vijayawada', 
+        description: 'Commercial center in Andhra Pradesh',
+        color: '#f4511e' // Deep Orange
+      },
+      { 
+        position: { lat: 20.2961, lng: 85.8245 }, 
+        title: 'Puri', 
+        description: 'Coastal temple town in Odisha',
+        color: '#6d4c41' // Brown
+      },
+      { 
+        position: { lat: 8.0883, lng: 77.5385 }, 
+        title: 'Kanyakumari', 
+        description: 'Southernmost tip of mainland India',
+        color: '#546e7a' // Blue Grey
+      }
+    ];
+
+    // Add markers for each coastal area
+    indianCoastalAreas.forEach(location => {
+      addMarker(
+        location.position,
+        location.title,
+        location.color,
+        mapInstance,
+        location.description
+      );
+    });
+
+    // Set bounds to focus on India
+    const bounds = new window.google.maps.LatLngBounds();
+    indianCoastalAreas.forEach(location => {
+      bounds.extend(location.position);
+    });
+    mapInstance.fitBounds(bounds);
   };
 
   const getUserLocation = (mapInstance) => {
@@ -114,32 +200,33 @@ const SatelliteMapWorking = () => {
     }
   };
 
-  const addMarker = (position, title, color, mapInstance) => {
+  const addMarker = (position, title, color, mapInstance, description) => {
     console.log('🎯 Adding marker:', { position, title, color });
     
     try {
-      const marker = new google.maps.Marker({
+      const marker = new window.google.maps.Marker({
         position: position,
         map: mapInstance,
         title: title,
-        animation: google.maps.Animation.DROP,
+        animation: window.google.maps.Animation.DROP,
         icon: {
           url: `data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${encodeURIComponent(color)}'%3e%3cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/%3e%3c/svg%3e`,
-          scaledSize: new google.maps.Size(30, 30)
+          scaledSize: new window.google.maps.Size(30, 30)
         }
       });
 
       const infoWindow = new google.maps.InfoWindow({
         content: `
-          <div style="padding: 12px; min-width: 200px;">
+          <div style="padding: 12px; min-width: 240px;">
             <h3 style="margin: 0 0 8px 0; color: #333; font-size: 16px;">${title}</h3>
+            ${description ? `<p style="margin: 0 0 8px 0; color: #555; font-size: 14px;">${description}</p>` : ''}
             <p style="margin: 0; color: #666; font-size: 13px;">
               <strong>Coordinates:</strong><br>
               Latitude: ${position.lat.toFixed(6)}<br>
               Longitude: ${position.lng.toFixed(6)}
             </p>
             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee;">
-              <small style="color: #888;">Click marker to see info • Drag to move</small>
+              <small style="color: #888;">Indian Coastal Monitoring • CTAS</small>
             </div>
           </div>
         `

@@ -20,6 +20,7 @@ const CommunityReports = () => {
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState({});
 
   // Sample data - in real app, this would come from API
   useEffect(() => {
@@ -207,21 +208,43 @@ const CommunityReports = () => {
 
   const sendAdditionalSMS = async (reportId) => {
     try {
-      // Simulate SMS sending
+      // Get the report
       const report = reports.find(r => r.id === reportId);
       if (!report) return;
 
       console.log('Sending additional SMS alerts for:', report.title);
       
-      // Update SMS count
+      // In a real application, this would make an API call to your backend
+      // For example:
+      // const response = await fetch('/api/community-reports/send-sms', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ reportId, radius: 5 }) // 5km radius for example
+      // });
+      
+      // Show sending indicator
+      setSending(prev => ({ ...prev, [reportId]: true }));
+      
+      // Simulate network request
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Generate a random number of new SMS messages (20-70)
+      const newSmsCount = Math.floor(Math.random() * 50) + 20;
+      
+      // Update SMS count in our local state
       setReports(prev => prev.map(r => 
-        r.id === reportId ? { ...r, smsAlertsSent: r.smsAlertsSent + Math.floor(Math.random() * 50) + 20 } : r
+        r.id === reportId ? { ...r, smsAlertsSent: (r.smsAlertsSent || 0) + newSmsCount } : r
       ));
+      
+      // Clear sending indicator
+      setSending(prev => ({ ...prev, [reportId]: false }));
 
-      alert('Additional SMS alerts sent to nearby residents!');
+      // Show success message
+      alert(`${newSmsCount} SMS alerts sent to nearby residents in the affected area!`);
     } catch (error) {
       console.error('SMS sending error:', error);
       alert('Failed to send SMS alerts. Please try again.');
+      setSending(prev => ({ ...prev, [reportId]: false }));
     }
   };
 
@@ -415,6 +438,12 @@ const CommunityReports = () => {
                               <Bell className="w-4 h-4" />
                               <span>{report.smsAlertsSent || 0} SMS alerts sent</span>
                             </div>
+                            {sending[report.id] && (
+                              <div className="flex items-center space-x-2 text-yellow-400 animate-pulse">
+                                <Send className="w-4 h-4" />
+                                <span>Sending SMS...</span>
+                              </div>
+                            )}
                             {report.acknowledgedBy && (
                               <div className="flex items-center space-x-2 text-green-400">
                                 <CheckCircle className="w-4 h-4" />
@@ -429,10 +458,24 @@ const CommunityReports = () => {
                                 e.stopPropagation();
                                 sendAdditionalSMS(report.id);
                               }}
-                              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors flex items-center space-x-1"
+                              disabled={sending[report.id]}
+                              className={`${
+                                sending[report.id] 
+                                  ? 'bg-blue-800 cursor-not-allowed' 
+                                  : 'bg-blue-600 hover:bg-blue-700'
+                              } text-white px-3 py-1 rounded text-sm transition-colors flex items-center space-x-1`}
                             >
-                              <Send className="w-4 h-4" />
-                              <span>Send SMS</span>
+                              {sending[report.id] ? (
+                                <>
+                                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                  <span>Sending...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Send className="w-4 h-4" />
+                                  <span>Send SMS</span>
+                                </>
+                              )}
                             </button>
                             
                             <select
@@ -466,6 +509,13 @@ const CommunityReports = () => {
         <CommunityReportForm
           onClose={() => setShowReportForm(false)}
           onSubmit={handleReportSubmit}
+          initialData={selectedReport ? {
+            reportType: selectedReport.type,
+            severity: selectedReport.severity,
+            location: selectedReport.location,
+            coordinates: selectedReport.coordinates,
+            // Don't copy personal info
+          } : null}
         />
       )}
 
@@ -486,6 +536,53 @@ const CommunityReports = () => {
             </div>
 
             <div className="p-6">
+              {/* Action buttons */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                <button
+                  onClick={() => {
+                    setSelectedReport(null);
+                    setShowReportForm(true);
+                  }}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center space-x-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Create Similar Report</span>
+                </button>
+                
+                <button
+                  onClick={() => sendAdditionalSMS(selectedReport.id)}
+                  disabled={sending[selectedReport.id]}
+                  className={`${
+                    sending[selectedReport.id] ? 'bg-blue-800 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                  } text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center space-x-2`}
+                >
+                  {sending[selectedReport.id] ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      <span>Sending SMS...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>Send SMS Alert</span>
+                    </>
+                  )}
+                </button>
+                
+                <div className="ml-auto">
+                  <select
+                    value={selectedReport.status}
+                    onChange={(e) => handleStatusChange(selectedReport.id, e.target.value)}
+                    className="bg-gray-700 border border-gray-600 rounded-lg text-white text-sm px-3 py-2 focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="active">Set as Active</option>
+                    <option value="investigating">Mark as Investigating</option>
+                    <option value="resolved">Mark as Resolved</option>
+                    <option value="false_alarm">Mark as False Alarm</option>
+                  </select>
+                </div>
+              </div>
+            
               {/* Report header */}
               <div className="mb-6">
                 <div className="flex items-center space-x-4 mb-4">
@@ -615,6 +712,59 @@ const CommunityReports = () => {
                   </div>
                 </div>
               </div>
+              
+              {/* SMS Notification History */}
+              {selectedReport.smsAlertsSent > 0 && (
+                <div className="mt-6 bg-blue-900/20 rounded-lg border border-blue-700/30 p-4">
+                  <h3 className="text-white text-lg font-semibold mb-3 flex items-center">
+                    <Bell className="w-5 h-5 text-blue-400 mr-2" />
+                    SMS Alert History
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="text-blue-300 flex items-center">
+                        <Send className="w-4 h-4 mr-2" />
+                        <span>Initial alert</span>
+                      </div>
+                      <div className="text-gray-400">
+                        {selectedReport.timestamp.toLocaleString()}
+                      </div>
+                    </div>
+                    
+                    {/* Generate fake history based on smsAlertsSent count */}
+                    {selectedReport.smsAlertsSent > 50 && (
+                      <div className="flex items-center justify-between">
+                        <div className="text-blue-300 flex items-center">
+                          <Send className="w-4 h-4 mr-2" />
+                          <span>Extended radius alert</span>
+                        </div>
+                        <div className="text-gray-400">
+                          {new Date(selectedReport.timestamp.getTime() + 1800000).toLocaleString()}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {selectedReport.smsAlertsSent > 100 && (
+                      <div className="flex items-center justify-between">
+                        <div className="text-blue-300 flex items-center">
+                          <Send className="w-4 h-4 mr-2" />
+                          <span>Follow-up alert</span>
+                        </div>
+                        <div className="text-gray-400">
+                          {new Date(selectedReport.timestamp.getTime() + 3600000).toLocaleString()}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="mt-4 pt-4 border-t border-blue-700/30">
+                      <div className="flex items-center justify-between">
+                        <div className="text-gray-300">Total recipients</div>
+                        <div className="text-white font-semibold">{selectedReport.smsAlertsSent}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Actions */}
               <div className="flex space-x-3 mt-6 pt-6 border-t border-gray-600">
