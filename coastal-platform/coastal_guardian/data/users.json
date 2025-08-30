@@ -1,0 +1,70 @@
+{
+  "users": [
+    {
+      "_id": "c3f3d459-4e56-460b-badd-d4278f1b8c6d",
+      "name": "Admin User",
+      "email": "admin@coastalguardian.com",
+      "passwordHash": "d3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791",
+      "role": "authority",
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          72.8777,
+          19.076
+        ]
+      },
+      "points": 10,
+      "preferences": {
+        "sms": true,
+        "email": true,
+        "push": false
+      },
+      "createdAt": "2025-08-30T08:31:35.070255",
+      "updatedAt": "2025-08-30T08:38:43.375741"
+    },
+    {
+      "_id": "ede7b74b-4614-455e-8696-13defd4016c7",
+      "name": "NGO Representative",
+      "email": "ngo@coastalguardian.com",
+      "passwordHash": "d3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791",
+      "role": "ngo",
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          74.124,
+          15.2993
+        ]
+      },
+      "points": 0,
+      "preferences": {
+        "sms": true,
+        "email": true,
+        "push": true
+      },
+      "createdAt": "2025-08-30T08:31:35.070274",
+      "updatedAt": "2025-08-30T08:31:35.070275"
+    },
+    {
+      "_id": "05ea9c90-5a1e-4fcd-a8b4-9468b6f141a4",
+      "name": "Community Member",
+      "email": "community@coastalguardian.com",
+      "passwordHash": "d3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791",
+      "role": "community",
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          80.2707,
+          13.0827
+        ]
+      },
+      "points": 0,
+      "preferences": {
+        "sms": false,
+        "email": true,
+        "push": false
+      },
+      "createdAt": "2025-08-30T08:31:35.070283",
+      "updatedAt": "2025-08-30T08:31:35.070284"
+    }
+  ]
+}
