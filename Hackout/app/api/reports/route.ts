@@ -1,70 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import { connectDB } from "@/lib/mongodb";
+import Report from "@/models/Report";
 
-export async function GET(request: NextRequest) {
+export async function POST(req: Request) {
   try {
-    // Mock reports data
-    const reports = [
-      {
-        id: '1',
-        type: 'erosion',
-        title: 'Beach Erosion Report',
-        description: 'Significant erosion observed at North Beach',
-        location: 'North Beach',
-        submittedBy: 'John Doe',
-        timestamp: new Date().toISOString(),
-        status: 'active'
-      },
-      {
-        id: '2',
-        type: 'water_quality',
-        title: 'Water Quality Report',
-        description: 'Water clarity improved at South Bay',
-        location: 'South Bay',
-        submittedBy: 'Jane Smith',
-        timestamp: new Date().toISOString(),
-        status: 'active'
-      },
-      {
-        id: '3',
-        type: 'wildlife',
-        title: 'Wildlife Sighting',
-        description: 'Sea turtle nesting activity observed',
-        location: 'East Coast',
-        submittedBy: 'Mike Johnson',
-        timestamp: new Date().toISOString(),
-        status: 'active'
-      }
-    ];
-    
-    return NextResponse.json({ 
-      success: true, 
-      reports 
-    });
-    
-  } catch (error) {
-    return NextResponse.json({ 
-      success: false, 
-      message: 'Internal server error' 
-    }, { status: 500 });
+    await connectDB();
+    const data = await req.json();
+    const report = new Report(data);
+    await report.save();
+    return NextResponse.json({ success: true, report });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const { type, title, description, location } = await request.json();
-    
-    // Create new report logic here
-    
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Report submitted successfully',
-      report: { id: 'new123', type, title, description, location }
-    });
-    
-  } catch (error) {
-    return NextResponse.json({ 
-      success: false, 
-      message: 'Internal server error' 
-    }, { status: 500 });
-  }
+export async function GET() {
+  await connectDB();
+  const reports = await Report.find();
+  return NextResponse.json(reports);
 }
