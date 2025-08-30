@@ -1,27 +1,101 @@
 {
-  "name": "hackout",
+  "name": "ctas-root",
+  "version": "1.0.0",
+  "description": "Coastal Threat Assessment System - Root Package",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:ai\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:ai": "cd ai-models && python api/app.py",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && npm run test",
+    "test:backend": "cd backend && npm run test",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && npm run lint",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "install:all": "npm install && npm run install:frontend && npm run install:backend",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "setup": "npm run install:all && cp .env.example .env",
+    "clean": "npm run clean:frontend && npm run clean:backend",
+    "clean:frontend": "cd frontend && rm -rf node_modules dist",
+    "clean:backend": "cd backend && rm -rf node_modules dist",
+    "db:seed": "cd backend && npm run db:seed",
+    "db:migrate": "cd backend && npm run db:migrate"
   },
   "dependencies": {
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "lucide-react": "^0.542.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.30.1",
+    "recharts": "^3.1.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@tailwindcss/postcss": "^4.1.12",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react-swc": "^4.0.0",
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^8.2.2",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "postcss": "^8.5.6",
+    "prettier": "^3.1.1",
+    "tailwindcss": "^4.1.12",
     "vite": "^7.1.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/CTAS.git"
+  },
+  "keywords": [
+    "coastal",
+    "threat",
+    "assessment",
+    "ai",
+    "machine-learning",
+    "environmental",
+    "monitoring",
+    "climate-change"
+  ],
+  "author": "CTAS Development Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   }
 }
