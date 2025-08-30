@@ -7,14 +7,12 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    target: 'esnext',
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          redux: ['@reduxjs/toolkit', 'react-redux'],
-          ui: ['lucide-react']
-        }
-      }
+        manualChunks: undefined
+      },
+      external: []
     }
   },
   server: {
