@@ -1,0 +1,62 @@
+{
+  "notification_settings": {
+    "sms_enabled": true,
+    "email_enabled": true,
+    "console_logging": true,
+    "file_logging": true,
+    "min_severity_for_sms": "high",
+    "min_severity_for_email": "moderate",
+    "retry_attempts": 3,
+    "retry_delay_seconds": 60
+  },
+  "twilio": {
+    "account_sid": "your_twilio_account_sid_here",
+    "auth_token": "your_twilio_auth_token_here",
+    "from_number": "+1234567890"
+  },
+  "email": {
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "username": "your_email@gmail.com",
+    "password": "your_app_password_here",
+    "from_email": "alerts@coastalguardian.com",
+    "use_tls": true
+  },
+  "recipients": {
+    "sms": [
+      "+1234567890",
+      "+0987654321"
+    ],
+    "email": [
+      "admin@coastalguardian.com",
+      "emergency@coastalguardian.com",
+      "monitoring@coastalguardian.com"
+    ]
+  },
+  "alert_templates": {
+    "sms": {
+      "critical": "🚨 CRITICAL: {type} - {message} - Score: {score}/100",
+      "high": "⚠️ HIGH: {type} - {message} - Score: {score}/100",
+      "moderate": "📊 MODERATE: {type} - {message} - Score: {score}/100",
+      "low": "ℹ️ LOW: {type} - {message} - Score: {score}/100"
+    },
+    "email": {
+      "subject_template": "🚨 COASTAL ALERT: {type} - {severity}",
+      "html_template": "templates/email_alert.html"
+    }
+  },
+  "thresholds": {
+    "tide": 3.5,
+    "sea_level": 1.5,
+    "wave": 2.5,
+    "wind": 25.0,
+    "turbidity": 10.0
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file_path": "logs/alerts.log",
+    "max_file_size_mb": 10,
+    "backup_count": 5
+  }
+}
