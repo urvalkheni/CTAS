@@ -34,206 +34,155 @@ st.set_page_config(
 # Custom CSS
 st.markdown("""
 <style>
+    :root {
+        --primary: #00b894;
+        --accent: #00cec9;
+        --bg: #ffffff;
+        --bg-alt: #f0f8ff;
+        --text: #2d3436;
+        --muted: #636e72;
+        --border: #74b9ff;
+        --shadow: 0 10px 30px rgba(0,0,0,0.08);
+        --success: #00b894;
+        --info: #00cec9;
+        --warning: #fdcb6e;
+        --danger: #e17055;
+    }
+
+    /* Layout container: tighten width and center */
+    .block-container {
+        max-width: 1200px;
+        padding-top: 1rem;
+    }
+
+    /* Top header bar for authenticated views */
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(120deg, var(--primary), var(--accent));
+        color: #fff;
+        padding: 1rem 1.25rem;
+        border-radius: 0.75rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 1.5rem;
+    }
+    .topbar .logo { font-weight: 700; letter-spacing: 0.2px; }
+    .topbar .tagline { opacity: 0.9; font-size: 0.95rem; }
+
     /* Hero Section */
     .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
         color: white;
         padding: 4rem 2rem;
         border-radius: 1rem;
         text-align: center;
-        margin-bottom: 3rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-    
-    .hero-title {
-        font-size: 4rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    .hero-subtitle {
-        font-size: 1.5rem;
         margin-bottom: 2rem;
-        opacity: 0.9;
+        box-shadow: var(--shadow);
     }
-    
-    .hero-description {
-        font-size: 1.1rem;
-        max-width: 600px;
-        margin: 0 auto 2rem;
-        line-height: 1.6;
+    .hero-title {
+        font-size: 3.25rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.25);
     }
-    
+    .hero-subtitle { font-size: 1.25rem; margin-bottom: 1.25rem; opacity: 0.95; }
+    .hero-description { font-size: 1.05rem; max-width: 780px; margin: 0 auto 1.5rem; line-height: 1.65; }
+
+    /* Generic Section/Card */
+    .section {
+        background: var(--bg);
+        border: 2px solid var(--border);
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        margin: 1rem 0 1.25rem 0;
+    }
+
     /* Feature Cards */
     .feature-card {
         background: white;
-        padding: 2rem;
+        padding: 1.5rem;
         border-radius: 1rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         text-align: center;
-        margin-bottom: 2rem;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 1px solid #e1e5e9;
+        margin-bottom: 1.5rem;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        border: 2px solid var(--border);
     }
-    
-    .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    }
-    
-    .feature-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
-    
-    .feature-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 1rem;
-    }
-    
-    .feature-description {
-        color: #6c757d;
-        line-height: 1.6;
-    }
-    
-    /* CTA Buttons */
+    .feature-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,0.12); }
+    .feature-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .feature-title { font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+    .feature-description { color: var(--muted); line-height: 1.6; }
+
+    /* CTA Section */
     .cta-section {
-        background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+        color: white;
+        padding: 2.25rem 1.5rem;
+        border-radius: 1rem;
+        text-align: center;
+        margin: 2rem 0;
+        box-shadow: var(--shadow);
+    }
+    .cta-button { background: white; color: var(--primary); padding: 0.85rem 1.5rem; border: none; border-radius: 0.5rem; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: all 0.25s ease; margin: 0.4rem; text-decoration: none; display: inline-block; min-width: 200px; }
+    .cta-button:hover { background: #f8f9fa; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+    .cta-button-secondary { background: transparent; color: white; border: 2px solid white; }
+    .cta-button-secondary:hover { background: white; color: var(--primary); }
+
+    /* Logout Page */
+    .logout-container {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
         color: white;
         padding: 3rem 2rem;
         border-radius: 1rem;
         text-align: center;
-        margin: 3rem 0;
+        margin: 1.5rem 0;
+        box-shadow: var(--shadow);
     }
+    .logout-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+    .logout-title { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .logout-message { font-size: 1.05rem; margin-bottom: 1.25rem; opacity: 0.95; }
+
+    /* Alert cards with new theme */
+    .alert-critical { background-color: #ffe8e8; border-left: 4px solid var(--danger); }
+    .alert-high { background-color: #fff3e0; border-left: 4px solid var(--warning); }
+    .alert-moderate { background-color: #e8f5e8; border-left: 4px solid var(--success); }
+    .alert-low { background-color: #e8f5e8; border-left: 4px solid var(--info); }
+
+    /* Metric and role badges */
+    .metric-card { background-color: var(--bg-alt); padding: 0.85rem; border-radius: 0.5rem; border: 1px solid var(--border); }
+    .role-badge { padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 800; }
+    .role-authority { background-color: #e8f5e8; color: var(--success); }
+    .role-ngo { background-color: #e0f7fa; color: var(--info); }
+    .role-community { background-color: #e8f5e8; color: var(--success); }
+
+    /* Stats */
+    .stats-container { background: var(--bg-alt); padding: 1.5rem; border-radius: 1rem; margin: 1.25rem 0; border: 2px solid var(--border); }
+    .stat-item { text-align: center; padding: 0.75rem; }
+    .stat-number { font-size: 2rem; font-weight: 800; color: var(--text); margin-bottom: 0.25rem; }
+    .stat-label { color: var(--muted); font-weight: 600; }
+
+    /* Navigation hover */
+    .nav-item { padding: 0.5rem; margin: 0.25rem 0; border-radius: 0.5rem; transition: background-color 0.2s ease; }
+    .nav-item:hover { background-color: var(--bg-alt); }
+
+    /* Enhanced Typography */
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    h1, h2, h3, h4, h5, h6 { color: var(--text); font-weight: 700; }
+    p { color: var(--text); line-height: 1.6; }
     
-    .cta-button {
-        background: white;
-        color: #0984e3;
-        padding: 1rem 2rem;
-        border: none;
-        border-radius: 0.5rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin: 0.5rem;
-        text-decoration: none;
-        display: inline-block;
-        min-width: 200px;
-    }
+    /* Streamlit specific improvements */
+    .stApp { background-color: var(--bg-alt); }
+    .main .block-container { background-color: var(--bg); border-radius: 1rem; padding: 2rem; box-shadow: var(--shadow); }
+    .stButton > button { background-color: var(--primary); color: white; border: none; border-radius: 0.5rem; padding: 0.75rem 1.5rem; font-weight: 600; }
+    .stButton > button:hover { background-color: var(--accent); transform: translateY(-2px); }
     
-    .cta-button:hover {
-        background: #f8f9fa;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
+    /* Data tables */
+    .stDataFrame { border: 2px solid var(--border); border-radius: 0.5rem; }
     
-    .cta-button-secondary {
-        background: transparent;
-        color: white;
-        border: 2px solid white;
-    }
-    
-    .cta-button-secondary:hover {
-        background: white;
-        color: #0984e3;
-    }
-    
-    /* Logout Page */
-    .logout-container {
-        background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
-        color: white;
-        padding: 4rem 2rem;
-        border-radius: 1rem;
-        text-align: center;
-        margin: 2rem 0;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-    
-    .logout-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-    }
-    
-    .logout-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-    
-    .logout-message {
-        font-size: 1.2rem;
-        margin-bottom: 2rem;
-        opacity: 0.9;
-    }
-    
-    /* Existing Styles */
-    .main-header {
-        font-size: 3rem;
-        font-weight: bold;
-        text-align: center;
-        color: #1f77b4;
-        margin-bottom: 2rem;
-    }
-    .alert-critical { background-color: #ffebee; border-left: 4px solid #d32f2f; }
-    .alert-high { background-color: #fff3e0; border-left: 4px solid #f57c00; }
-    .alert-moderate { background-color: #fff8e1; border-left: 4px solid #ffa000; }
-    .alert-low { background-color: #f1f8e9; border-left: 4px solid #689f38; }
-    .metric-card {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid #dee2e6;
-    }
-    .role-badge {
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-        font-weight: bold;
-    }
-    .role-authority { background-color: #e3f2fd; color: #1976d2; }
-    .role-ngo { background-color: #f3e5f5; color: #7b1fa2; }
-    .role-community { background-color: #e8f5e8; color: #388e3c; }
-    
-    /* Statistics Section */
-    .stats-container {
-        background: #f8f9fa;
-        padding: 2rem;
-        border-radius: 1rem;
-        margin: 2rem 0;
-    }
-    
-    .stat-item {
-        text-align: center;
-        padding: 1rem;
-    }
-    
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #2d3436;
-        margin-bottom: 0.5rem;
-    }
-    
-    .stat-label {
-        color: #636e72;
-        font-weight: 500;
-    }
-    
-    /* Navigation Enhancement */
-    .nav-item {
-        padding: 0.5rem;
-        margin: 0.25rem 0;
-        border-radius: 0.5rem;
-        transition: background-color 0.3s ease;
-    }
-    
-    .nav-item:hover {
-        background-color: #f1f3f4;
-    }
+    /* Charts and visualizations */
+    .stPlotlyChart { border: 2px solid var(--border); border-radius: 0.5rem; padding: 1rem; background: white; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -613,6 +562,17 @@ elif st.session_state.user is None:
 else:
     # Authenticated user interface
     user = st.session_state.user
+
+    # Top header bar for authenticated sections
+    st.markdown(
+        f"""
+        <div class="topbar">
+            <div class="logo">🌊 Coastal Guardian</div>
+            <div class="tagline">Real-time coastal intelligence • Signed in as <strong>{user['name']}</strong></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     
     if page == "🏠 Dashboard":
         st.header("📊 Dashboard")
@@ -641,7 +601,8 @@ else:
                             icon=folium.Icon(color='red', icon='warning-sign')).add_to(m)
                 folium.Marker([13.0827, 80.2707], popup="Chennai - Storm Warning", 
                             icon=folium.Icon(color='orange', icon='warning-sign')).add_to(m)
-                st_folium(m, width=800, height=400)
+                # Full-width map aligned to container
+                st_folium(m, width=1200, height=420)
             except Exception as e:
                 st.error(f"Map error: {e}")
                 st.info("Showing demo map data instead")
