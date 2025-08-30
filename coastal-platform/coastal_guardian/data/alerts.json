@@ -1,3 +1,40 @@
 {
-  "alerts": []
+  "alerts": [
+    {
+      "id": "alert_001",
+      "timestamp": "2024-01-02 12:00:00",
+      "type": "high_tide",
+      "severity": "critical",
+      "message": "High tide alert: Tide level reached 4.2m",
+      "lat": 19.0760,
+      "lng": 72.8777,
+      "location": "Mumbai Gateway",
+      "value": 4.2,
+      "threshold": 4.0
+    },
+    {
+      "id": "alert_002",
+      "timestamp": "2024-01-04 12:00:00",
+      "type": "high_wave",
+      "severity": "high",
+      "message": "High wave alert: Wave height reached 3.2m",
+      "lat": 19.0760,
+      "lng": 72.8777,
+      "location": "Mumbai Gateway",
+      "value": 3.2,
+      "threshold": 2.5
+    },
+    {
+      "id": "alert_003",
+      "timestamp": "2024-01-06 12:00:00",
+      "type": "high_wind",
+      "severity": "moderate",
+      "message": "High wind alert: Wind speed reached 23.7 km/h",
+      "lat": 19.0760,
+      "lng": 72.8777,
+      "location": "Mumbai Gateway",
+      "value": 23.7,
+      "threshold": 20.0
+    }
+  ]
 }
