@@ -9,7 +9,6 @@ import {
 import DashboardPage from '../pages/Dashboard';
 import ThreatMonitoringPage from '../pages/ThreatMonitoring';
 import CommunityReportingPage from '../pages/CommunityReporting';
-import AlertsManagementPage from '../pages/AlertsManagement';
 import DataAnalyticsPage from '../pages/DataAnalytics';
 import UserProfilePage from '../pages/UserProfile';
 import LogoutPage, { LogoutSuccessPage } from './LogoutPage';
@@ -35,14 +34,12 @@ const MainApp = ({ user, onLogout }) => {
 
     const roleSpecificItems = {
       official: [
-        { id: 'alerts', label: 'Alert Management', icon: Bell, description: 'Manage and send alerts to communities' },
         { id: 'analytics', label: 'Data Analytics', icon: BarChart3, description: 'Advanced analytics and insights' }
       ],
       researcher: [
         { id: 'analytics', label: 'Data Analytics', icon: BarChart3, description: 'Research data and analysis tools' }
       ],
       emergency: [
-        { id: 'alerts', label: 'Emergency Alerts', icon: Bell, description: 'Emergency response coordination' }
       ],
       citizen: []
     };
@@ -105,8 +102,6 @@ const MainApp = ({ user, onLogout }) => {
         return <ThreatMonitoringPage user={user} />;
       case 'community':
         return <CommunityReportingPage user={user} />;
-      case 'alerts':
-        return <AlertsManagementPage user={user} />;
       case 'analytics':
         return <DataAnalyticsPage user={user} />;
       case 'profile':
