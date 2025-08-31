@@ -7,7 +7,7 @@ import {
 
 // Import page components
 import DashboardPage from '../pages/Dashboard';
-import ThreatMonitoringPage from '../pages/ThreatMonitoring';
+import ThreatMonitoringPage from './ThreatMonitoringPage';
 import CommunityReportingPage from '../pages/CommunityReporting';
 import DataAnalyticsPage from '../pages/DataAnalytics';
 import UserProfilePage from '../pages/UserProfile';
@@ -29,7 +29,11 @@ const MainApp = ({ user, onLogout }) => {
     const baseItems = [
       { id: 'dashboard', label: 'Dashboard', icon: Home, description: 'System overview and key metrics' },
       { id: 'threats', label: 'Threat Monitor', icon: AlertTriangle, description: 'Real-time threat detection and analysis' },
-      { id: 'community', label: 'Community Reports', icon: Users, description: 'Citizen observations and reports' }
+      { id: 'community', label: 'Community Reports', icon: Users, description: 'Citizen observations and reports' },
+      { id: 'weather', label: 'Weather', icon: CloudRain, description: 'Weather monitoring and forecasts' },
+      { id: 'satellite', label: 'Satellite', icon: Satellite, description: 'Satellite data and imagery' },
+      { id: 'reports', label: 'Reports', icon: Users, description: 'Threat and community reports' },
+      { id: 'analytics', label: 'Analytics', icon: BarChart3, description: 'Advanced analytics and insights' }
     ];
 
     const roleSpecificItems = {
@@ -39,8 +43,9 @@ const MainApp = ({ user, onLogout }) => {
       researcher: [
         { id: 'analytics', label: 'Data Analytics', icon: BarChart3, description: 'Research data and analysis tools' }
       ],
-      emergency: [
-      ],
+
+      emergency: [],
+
       citizen: []
     };
 
@@ -94,6 +99,7 @@ const MainApp = ({ user, onLogout }) => {
   }
 
   // Render page component based on current page
+  const WeatherPage = React.lazy(() => import('./WeatherPage'));
   const renderPageContent = () => {
     switch (currentPage) {
       case 'dashboard':
@@ -102,6 +108,10 @@ const MainApp = ({ user, onLogout }) => {
         return <ThreatMonitoringPage user={user} />;
       case 'community':
         return <CommunityReportingPage user={user} />;
+
+      case 'weather':
+        return <React.Suspense fallback={<div>Loading...</div>}><WeatherPage /></React.Suspense>;
+
       case 'analytics':
         return <DataAnalyticsPage user={user} />;
       case 'profile':

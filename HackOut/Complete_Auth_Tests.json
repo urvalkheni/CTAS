@@ -1,0 +1,173 @@
+{
+  "clientName": "Thunder Client",
+  "collectionName": "CTAS Complete Authentication",
+  "collectionId": "ctas-complete-auth",
+  "dateExported": "2025-08-30T15:20:00.000Z",
+  "version": "1.0",
+  "folderName": "",
+  "requests": [
+    {
+      "name": "1. Health Check",
+      "url": "http://localhost:5001/health",
+      "method": "GET",
+      "headers": [],
+      "body": {
+        "type": "none"
+      },
+      "description": "Check if the server is running"
+    },
+    {
+      "name": "2. Test Auth Route",
+      "url": "http://localhost:5001/api/auth/test",
+      "method": "GET",
+      "headers": [],
+      "body": {
+        "type": "none"
+      },
+      "description": "Test basic auth route functionality"
+    },
+    {
+      "name": "3. Register User",
+      "url": "http://localhost:5001/api/auth/register",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"viewer\",\n  \"organization\": \"Coastal Research Institute\",\n  \"department\": \"Marine Biology\",\n  \"phone\": \"+1234567890\",\n  \"region\": \"East Coast\"\n}"
+      },
+      "description": "Register a new user and get JWT token"
+    },
+    {
+      "name": "4. Login User",
+      "url": "http://localhost:5001/api/auth/login",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+      },
+      "description": "Login with registered credentials and get JWT token"
+    },
+    {
+      "name": "5. Logout User",
+      "url": "http://localhost:5001/api/auth/logout",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "none"
+      },
+      "description": "Logout user (JWT invalidation handled client-side)"
+    },
+    {
+      "name": "Register Admin User",
+      "url": "http://localhost:5001/api/auth/register",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@ctas.com\",\n  \"password\": \"admin123\",\n  \"role\": \"admin\",\n  \"organization\": \"CTAS Management\",\n  \"department\": \"Operations\"\n}"
+      },
+      "description": "Register an admin user for testing"
+    },
+    {
+      "name": "Login Admin",
+      "url": "http://localhost:5001/api/auth/login",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"admin@ctas.com\",\n  \"password\": \"admin123\"\n}"
+      },
+      "description": "Login as admin user"
+    },
+    {
+      "name": "Login - Invalid Credentials",
+      "url": "http://localhost:5001/api/auth/login",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"wrongpassword\"\n}"
+      },
+      "description": "Test login with wrong password - should fail"
+    },
+    {
+      "name": "Login - Non-existent User",
+      "url": "http://localhost:5001/api/auth/login",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"nonexistent@example.com\",\n  \"password\": \"password123\"\n}"
+      },
+      "description": "Test login with non-existent email - should fail"
+    },
+    {
+      "name": "Login - Missing Fields",
+      "url": "http://localhost:5001/api/auth/login",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"john.doe@example.com\"\n}"
+      },
+      "description": "Test login without password - should fail"
+    },
+    {
+      "name": "Register - Duplicate Email",
+      "url": "http://localhost:5001/api/auth/register",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Another User\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+      },
+      "description": "Try to register with existing email - should fail"
+    }
+  ]
+}
