@@ -97,27 +97,45 @@ const authSlice = createSlice({
       state.user = user;
       state.token = token;
       state.isAuthenticated = true;
+      
+      // Also store in localStorage
+      localStorage.setItem('ctas_user', JSON.stringify(user));
+      localStorage.setItem('ctas_token', token);
     },
     clearCredentials: (state) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
+      
+      // Also clear from localStorage
+      localStorage.removeItem('ctas_user');
+      localStorage.removeItem('ctas_token');
     },
     initializeAuth: (state) => {
       // Check localStorage for existing auth
       const storedUser = localStorage.getItem('ctas_user');
       const storedToken = localStorage.getItem('ctas_token');
       
+      console.log('🔐 InitializeAuth Debug:', { 
+        storedUser: storedUser ? 'exists' : 'null', 
+        storedToken: storedToken ? 'exists' : 'null',
+        currentState: { user: state.user, isAuthenticated: state.isAuthenticated }
+      });
+      
       if (storedUser && storedToken) {
         try {
-          state.user = JSON.parse(storedUser);
+          const parsedUser = JSON.parse(storedUser);
+          state.user = parsedUser;
           state.token = storedToken;
           state.isAuthenticated = true;
+          console.log('🔐 Auth initialized successfully:', { user: parsedUser, isAuthenticated: true });
         } catch (error) {
           console.error('Failed to parse stored auth data:', error);
           localStorage.removeItem('ctas_user');
           localStorage.removeItem('ctas_token');
         }
+      } else {
+        console.log('🔐 No stored auth data found');
       }
     },
   },

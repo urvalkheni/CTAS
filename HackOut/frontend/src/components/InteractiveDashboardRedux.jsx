@@ -12,22 +12,40 @@ import { logoutUser } from '../store/slices/authSlice';
 import DashboardProvider from './DashboardProvider';
 import CurrentMonitorRedux from './CurrentMonitorRedux';
 import WeatherAlerts from './WeatherAlerts';
+import WeatherWidget from './WeatherWidget';
 import SatelliteMapWorking from './SatelliteMapWorking';
 import CommunityReports from './CommunityReports';
-import AdvancedAnalytics from './AdvancedAnalytics';
+
+import SatelliteMap from './SatelliteMap';
+import { useEffect } from 'react';
+
 
 const InteractiveDashboard = ({ onLogout }) => {
   const dispatch = useDispatch();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
 
-  const { user } = useAuth();
+
+  const { user, isAuthenticated } = useAuth();
+  const { alerts, unreadCount } = useAlerts();
+
   const { isConnected, syncStatus } = useConnectionStatus();
   const { 
     activeTab, 
     sidebarCollapsed, 
     isLoading
   } = useDashboard();
+
+  // Function to get user initials
+  const getUserInitials = (name) => {
+    if (!name || typeof name !== 'string') return 'U';
+    const names = name.trim().split(' ').filter(n => n.length > 0);
+    if (names.length === 0) return 'U';
+    if (names.length === 1) {
+      return names[0].charAt(0).toUpperCase();
+    }
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+  };
 
   const handleTabChange = (tab) => {
     dispatch(setActiveTab(tab));
@@ -171,7 +189,7 @@ const InteractiveDashboard = ({ onLogout }) => {
         );
       
       case 'weather':
-        return <WeatherAlerts />;
+        return <WeatherWidget />;
       
       case 'satellite':
         return <SatelliteMapWorking />;
@@ -215,38 +233,6 @@ const InteractiveDashboard = ({ onLogout }) => {
                 >
                   <Bell className="w-5 h-5 text-white" />
                 </button>
-                <div className="relative">
-                  <button
-                    onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center gap-2 p-2 bg-slate-700/50 rounded-lg"
-                  >
-                    <UserIcon className="w-5 h-5 text-white" />
-                  </button>
-                  {showUserMenu && (
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-slate-800 rounded-lg border border-slate-700 shadow-xl z-50">
-                      <div className="p-3 border-b border-slate-700">
-                        <p className="text-white font-medium">{user?.name || 'User'}</p>
-                        <p className="text-slate-400 text-sm">{user?.email || 'user@example.com'}</p>
-                      </div>
-                      <div className="p-2">
-                        <button
-                          onClick={handleOpenSettings}
-                          className="w-full flex items-center gap-2 p-2 text-slate-300 hover:bg-slate-700/50 rounded"
-                        >
-                          <Settings className="w-4 h-4" />
-                          Settings
-                        </button>
-                        <button
-                          onClick={handleLogout}
-                          className="w-full flex items-center gap-2 p-2 text-red-400 hover:bg-slate-700/50 rounded"
-                        >
-                          <LogOut className="w-4 h-4" />
-                          Logout
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           </div>
@@ -308,14 +294,16 @@ const InteractiveDashboard = ({ onLogout }) => {
             </nav>
 
             {/* Desktop User Menu */}
-            {!isMobileView && (
+            {!isMobileView && user && isAuthenticated && (
               <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700/50">
-                <div className="relative">
+                <div className="relative user-menu-container">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
                     className={`w-full flex items-center gap-3 p-3 text-slate-300 hover:bg-slate-700/50 rounded-lg ${sidebarCollapsed ? 'justify-center' : ''}`}
                   >
-                    <UserIcon className="w-5 h-5" />
+                    <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full text-white font-semibold text-xs">
+                      {getUserInitials(user?.name)}
+                    </div>
                     {!sidebarCollapsed && (
                       <>
                         <span className="flex-1 text-left">{user?.name || 'User'}</span>
@@ -333,17 +321,60 @@ const InteractiveDashboard = ({ onLogout }) => {
                       <div className="p-2">
                         <button
                           onClick={handleOpenSettings}
-                          className="w-full flex items-center gap-2 p-2 text-slate-300 hover:bg-slate-700/50 rounded"
+                          className="w-full flex items-center gap-2 p-2 text-slate-300 hover:bg-slate-700/50 hover:text-white rounded transition-colors duration-200"
                         >
                           <Settings className="w-4 h-4" />
                           Settings
                         </button>
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-2 p-2 text-red-400 hover:bg-slate-700/50 rounded"
+                          className="w-full flex items-center gap-2 p-2 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded transition-all duration-200 mt-1 group"
                         >
-                          <LogOut className="w-4 h-4" />
-                          Logout
+                          <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                          <span className="font-medium">Logout</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Mobile User Menu */}
+            {isMobileView && user && isAuthenticated && (
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700/50">
+                <div className="relative user-menu-container">
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="w-full flex items-center gap-3 p-3 text-slate-300 hover:bg-slate-700/50 rounded-lg"
+                  >
+                    <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full text-white font-semibold text-xs">
+                      {getUserInitials(user?.name)}
+                    </div>
+                    <span className="flex-1 text-left">{user?.name || 'User'}</span>
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                  
+                  {showUserMenu && (
+                    <div className="absolute left-0 bottom-full mb-2 w-48 bg-slate-800 rounded-lg border border-slate-700 shadow-xl z-50">
+                      <div className="p-3 border-b border-slate-700">
+                        <p className="text-white font-medium">{user?.name || 'User'}</p>
+                        <p className="text-slate-400 text-sm">{user?.email || 'user@example.com'}</p>
+                      </div>
+                      <div className="p-2">
+                        <button
+                          onClick={handleOpenSettings}
+                          className="w-full flex items-center gap-2 p-2 text-slate-300 hover:bg-slate-700/50 hover:text-white rounded transition-colors duration-200"
+                        >
+                          <Settings className="w-4 h-4" />
+                          Settings
+                        </button>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-2 p-2 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded transition-all duration-200 mt-1 group"
+                        >
+                          <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                          <span className="font-medium">Logout</span>
                         </button>
                       </div>
                     </div>

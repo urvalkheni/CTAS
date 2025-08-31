@@ -1,52 +1,92 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, Eye, EyeOff, Shield, UserPlus, LogIn, ArrowLeft, Building, Phone, MapPin } from 'lucide-react';
+import axiosInstance from '../services/axiosInstance';
+import { useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { loginUser, registerUser, setCredentials } from '../store/slices/authSlice';
 
 const AuthSystem = ({ onAuthSuccess, onBack }) => {
+  const dispatch = useDispatch();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: '',
-    organization: '',
-    role: 'citizen'
+  const [input, setInput] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "",
+    organization: "",
   });
 
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
+    setInput({
+      ...input,
       [e.target.name]: e.target.value
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      setLoading(true);
       
-      // Mock successful authentication
-      const mockUser = {
-        id: 1,
-        name: formData.name || 'John Doe',
-        email: formData.email,
-        role: formData.role,
-        organization: formData.organization || 'Mumbai Coastal Authority',
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.email}`,
-        lastLogin: new Date().toISOString(),
-        permissions: ['view_dashboard', 'create_reports', 'view_alerts']
-      };
+      if (isLogin) {
+        // Handle login with Redux
+        const result = await dispatch(loginUser({
+          email: input.email,
+          password: input.password,
+        })).unwrap();
 
-      // Store user data and token
-      localStorage.setItem('ctas_user', JSON.stringify(mockUser));
-      localStorage.setItem('ctas_token', 'mock_jwt_token_' + Date.now());
-      
-      onAuthSuccess(mockUser);
+        if (result) {
+          toast.success('Login successful! Welcome back.');
+          
+          // Clear form
+          setInput({
+            name: "",
+            email: "",
+            password: "",
+            role: "",
+            organization: "",
+          });
+          
+          // Navigate to dashboard
+          onAuthSuccess(result.user);
+        }
+      } else {
+        // Handle registration with Redux
+        const result = await dispatch(registerUser({
+          name: input.name,
+          email: input.email,
+          password: input.password,
+          role: input.role,
+          organization: input.organization,
+        })).unwrap();
+
+        if (result) {
+          toast.success('Registration successful! Welcome to CTAS.');
+          
+          // Clear form
+          setInput({
+            name: "",
+            email: "",
+            password: "",
+            role: "",
+            organization: "",
+          });
+          
+          // Wait a moment for the toast to be visible, then redirect to landing page
+          setTimeout(() => {
+            onBack(); // This will take user back to landing page
+          }, 1500);
+        }
+      }
     } catch (error) {
       console.error('Authentication failed:', error);
+      const errorMessage = error.response?.data?.message || 
+                          (isLogin ? 'Login failed. Please check your credentials.' : 'Registration failed. Please try again.');
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -97,7 +137,7 @@ const AuthSystem = ({ onAuthSuccess, onBack }) => {
                       type="text"
                       name="name"
                       required={!isLogin}
-                      value={formData.name}
+                      value={input.name}
                       onChange={handleInputChange}
                       className="w-full pl-12 pr-4 py-3 bg-black/20 border border-white/20 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="Enter your full name"
@@ -115,7 +155,7 @@ const AuthSystem = ({ onAuthSuccess, onBack }) => {
                     <input
                       type="text"
                       name="organization"
-                      value={formData.organization}
+                      value={input.organization}
                       onChange={handleInputChange}
                       className="w-full pl-12 pr-4 py-3 bg-black/20 border border-white/20 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="Government, NGO, Research, etc."
@@ -130,14 +170,13 @@ const AuthSystem = ({ onAuthSuccess, onBack }) => {
                   </label>
                   <select
                     name="role"
-                    value={formData.role}
+                    value={input.role}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-black/20 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="citizen">Citizen Reporter</option>
-                    <option value="official">Government Official</option>
-                    <option value="researcher">Researcher</option>
-                    <option value="emergency">Emergency Responder</option>
+                    <option value="admin">Admin</option>
+                    <option value="operator">Operator</option>
+                    <option value="community_leader">Community Leader</option>
                   </select>
                 </div>
               </>
@@ -154,7 +193,7 @@ const AuthSystem = ({ onAuthSuccess, onBack }) => {
                   type="email"
                   name="email"
                   required
-                  value={formData.email}
+                  value={input.email}
                   onChange={handleInputChange}
                   className="w-full pl-12 pr-4 py-3 bg-black/20 border border-white/20 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter your email"
@@ -173,7 +212,7 @@ const AuthSystem = ({ onAuthSuccess, onBack }) => {
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   required
-                  value={formData.password}
+                  value={input.password}
                   onChange={handleInputChange}
                   className="w-full pl-12 pr-12 py-3 bg-black/20 border border-white/20 rounded-xl text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter your password"
@@ -257,8 +296,14 @@ const AuthSystem = ({ onAuthSuccess, onBack }) => {
                   lastLogin: new Date().toISOString(),
                   permissions: ['view_dashboard', 'create_reports', 'view_alerts']
                 };
-                localStorage.setItem('ctas_user', JSON.stringify(demoUser));
-                localStorage.setItem('ctas_token', 'demo_token');
+                
+                // Use Redux to set credentials
+                dispatch(setCredentials({ 
+                  user: demoUser, 
+                  token: 'demo_token' 
+                }));
+                
+                toast.success('Welcome, Demo User!');
                 onAuthSuccess(demoUser);
               }}
               className="w-full bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg transition-colors text-sm"
@@ -286,6 +331,32 @@ const AuthSystem = ({ onAuthSuccess, onBack }) => {
           </p>
         </div>
       </div>
+      
+      {/* Toast Notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: 'rgba(15, 23, 42, 0.9)',
+            color: '#fff',
+            border: '1px solid rgba(59, 130, 246, 0.3)',
+            backdropFilter: 'blur(8px)',
+          },
+          success: {
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
     </div>
   );
 };

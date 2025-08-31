@@ -12,7 +12,7 @@ require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
 // Connect to Database (commented out for now - requires MongoDB)
 // connectDB();
@@ -20,19 +20,10 @@ const PORT = process.env.PORT || 5000;
 // Security Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: 'http://localhost:5173',
   credentials: true
 }));
 
-// Rate Limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-app.use('/api/', limiter);
 
 // Body Parsing Middleware
 app.use(express.json({ limit: '10mb' }));
@@ -64,6 +55,7 @@ app.use('/api/satellite', require('./routes/satellite'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/noaa', require('./routes/simpleNoaaRoutes'));
 app.use('/api/community-reports', require('./routes/communityReports'));
+app.use('/api/threatReports', require('./routes/threatReports'));
 
 // Test Weather Service Route
 app.get('/api/test/weather', async (req, res) => {
@@ -106,17 +98,6 @@ app.get('*', (req, res) => {
   });
 });
 
-// Global Error Handler
-app.use((err, req, res, next) => {
-  console.error('Error:', err.stack);
-  
-  res.status(err.status || 500).json({
-    status: 'error',
-    message: err.message || 'Internal Server Error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  });
-});
-
 // Graceful Shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM received. Shutting down gracefully...');
@@ -128,18 +109,49 @@ process.on('SIGINT', () => {
   process.exit(0);
 });
 
-app.listen(PORT, () => {
-  connectDB();
-  console.log(`
+// Start server
+const startServer = async () => {
+  try {
+    // Connect to database (non-blocking)
+    connectDB().catch(err => {
+      console.log('⚠️  Database connection failed, but server will continue running');
+      console.log('📱 API endpoints will be available, but database operations will fail');
+    });
+
+    // Start HTTP server
+    const server = app.listen(PORT, () => {
+      console.log(`
 🌊 CTAS Backend Server Starting...
 ==========================================
 📍 Server: http://localhost:${PORT}
 🌐 Environment: ${process.env.NODE_ENV || 'development'}
-🔑 API Key: ${process.env.OPENWEATHER_API_KEY ? 'Configured' : 'Missing'}
+🔑 Weather API: ${process.env.OPENWEATHER_API_KEY ? 'Configured' : 'Missing'}
+🔑 JWT Secret: ${process.env.JWT_SECRET ? 'Configured' : 'Missing'}
+🗄️  MongoDB: ${process.env.MONGODB_URI ? 'URI Configured' : 'URI Missing'}
 ⏰ Started: ${new Date().toISOString()}
 ==========================================
-🚀 Server is ready for connections!
-  `);
-});
+      `);
+    });
+
+    // Graceful shutdown
+    const gracefulShutdown = () => {
+      console.log('\n🔄 Shutting down gracefully...');
+      server.close(() => {
+        console.log('🔌 HTTP server closed.');
+        process.exit(0);
+      });
+    };
+
+    process.on('SIGTERM', gracefulShutdown);
+    process.on('SIGINT', gracefulShutdown);
+
+  } catch (error) {
+    console.error('❌ Failed to start server:', error.message);
+    process.exit(1);
+  }
+};
+
+// Start the server
+startServer();
 
 module.exports = app;
