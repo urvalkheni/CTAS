@@ -53,7 +53,6 @@ app.use('/api/reports', require('./routes/reports'));
 app.use('/api/weather', require('./routes/weather'));
 app.use('/api/satellite', require('./routes/satellite'));
 app.use('/api/users', require('./routes/users'));
-app.use('/api/alerts', require('./routes/alerts'));
 app.use('/api/noaa', require('./routes/simpleNoaaRoutes'));
 app.use('/api/community-reports', require('./routes/communityReports'));
 app.use('/api/threatReports', require('./routes/threatReports'));
