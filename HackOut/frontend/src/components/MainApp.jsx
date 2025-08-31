@@ -9,7 +9,6 @@ import {
 import DashboardPage from '../pages/Dashboard';
 import ThreatMonitoringPage from './ThreatMonitoringPage';
 import CommunityReportingPage from '../pages/CommunityReporting';
-import AlertsManagementPage from '../pages/AlertsManagement';
 import DataAnalyticsPage from '../pages/DataAnalytics';
 import UserProfilePage from '../pages/UserProfile';
 import LogoutPage, { LogoutSuccessPage } from './LogoutPage';
@@ -44,7 +43,9 @@ const MainApp = ({ user, onLogout }) => {
       researcher: [
         { id: 'analytics', label: 'Data Analytics', icon: BarChart3, description: 'Research data and analysis tools' }
       ],
+
       emergency: [],
+
       citizen: []
     };
 
@@ -107,8 +108,10 @@ const MainApp = ({ user, onLogout }) => {
         return <ThreatMonitoringPage user={user} />;
       case 'community':
         return <CommunityReportingPage user={user} />;
+
       case 'weather':
         return <React.Suspense fallback={<div>Loading...</div>}><WeatherPage /></React.Suspense>;
+
       case 'analytics':
         return <DataAnalyticsPage user={user} />;
       case 'profile':

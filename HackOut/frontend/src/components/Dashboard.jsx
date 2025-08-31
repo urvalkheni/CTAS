@@ -16,15 +16,8 @@ import {
 } from 'lucide-react';
 
 const Dashboard = ({ onBackToLanding }) => {
-  const [alerts, setAlerts] = useState([
-    { id: 1, type: 'critical', message: 'Storm surge detected - 2.3m above normal', location: 'Mumbai Coast', time: '2 min ago' },
-    { id: 2, type: 'warning', message: 'Illegal dumping activity in mangrove area', location: 'Sundarbans Delta', time: '15 min ago' },
-    { id: 3, type: 'info', message: 'High tide expected in next 3 hours', location: 'Kerala Backwaters', time: '1 hour ago' }
-  ]);
-
   const [stats, setStats] = useState({
     activeSensors: 247,
-    alertsToday: 12,
     communitiesProtected: 156,
     threatLevel: 'Medium'
   });
@@ -48,15 +41,6 @@ const Dashboard = ({ onBackToLanding }) => {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
-
-  const getAlertColor = useCallback((type) => {
-    switch(type) {
-      case 'critical': return 'border-red-500 bg-red-500/10 text-red-300';
-      case 'warning': return 'border-yellow-500 bg-yellow-500/10 text-yellow-300';
-      case 'info': return 'border-blue-500 bg-blue-500/10 text-blue-300';
-      default: return 'border-gray-500 bg-gray-500/10 text-gray-300';
-    }
   }, []);
 
   const getThreatLevelColor = useCallback((level) => {
@@ -91,12 +75,9 @@ const Dashboard = ({ onBackToLanding }) => {
             <div className="relative">
               <button 
                 className="relative p-2 rounded-lg hover:bg-white/10 transition-colors focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-900"
-                aria-label={`${alerts.length} notifications`}
+                aria-label="Notifications"
               >
                 <Bell className="w-6 h-6 text-white" />
-                <div className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-xs text-white font-bold">{alerts.length}</span>
-                </div>
               </button>
             </div>
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
@@ -127,15 +108,15 @@ const Dashboard = ({ onBackToLanding }) => {
         <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-200 text-sm font-medium">Alerts Today</p>
-              <p className="text-2xl sm:text-3xl font-bold text-white">{stats.alertsToday}</p>
+              <p className="text-blue-200 text-sm font-medium">Data Sources</p>
+              <p className="text-2xl sm:text-3xl font-bold text-white">8</p>
             </div>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400" aria-hidden="true" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+              <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" aria-hidden="true" />
             </div>
           </div>
           <div className="mt-3 sm:mt-4 flex items-center">
-            <span className="text-yellow-400 text-xs sm:text-sm">3 critical, 9 warnings</span>
+            <span className="text-green-400 text-xs sm:text-sm">Active data feeds</span>
           </div>
         </div>
 
@@ -228,35 +209,8 @@ const Dashboard = ({ onBackToLanding }) => {
           </div>
         </div>
 
-        {/* Alerts Panel */}
+        {/* Quick Actions */}
         <div className="space-y-4 sm:space-y-6">
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-white/20">
-            <h2 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">Recent Alerts</h2>
-            <div className="space-y-2 sm:space-y-3">
-              {alerts.map((alert) => (
-                <div 
-                  key={alert.id} 
-                  className={`p-3 sm:p-4 rounded-lg border ${getAlertColor(alert.type)} transition-all duration-300 hover:scale-105 cursor-pointer`}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`${alert.type} alert: ${alert.message}`}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1">
-                      <p className="font-semibold text-xs sm:text-sm">{alert.message}</p>
-                      <div className="flex items-center mt-2 text-xs opacity-80">
-                        <MapPin className="w-3 h-3 mr-1" aria-hidden="true" />
-                        <span>{alert.location}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-xs opacity-60">{alert.time}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Quick Actions */}
           <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-white/20">
             <h2 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">Quick Actions</h2>
             <div className="space-y-2 sm:space-y-3">
