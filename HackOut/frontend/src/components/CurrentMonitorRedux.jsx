@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import { Activity, MapPin, Clock, AlertTriangle, RefreshCw, Wifi, WifiOff } from 'lucide-react';
 import { useCurrentData, useConnectionStatus, useUI } from '../store/hooks';
 import { fetchCurrentsData, fetchThreatAssessment } from '../store/slices/noaaSlice';
-import { processNoaaData } from '../store/slices/alertSlice';
 
 const CurrentMonitor = ({ className = '' }) => {
   const dispatch = useDispatch();
@@ -34,13 +33,6 @@ const CurrentMonitor = ({ className = '' }) => {
     dispatch(fetchCurrentsData({ stationId: 'cb0102' }));
     dispatch(fetchThreatAssessment({ stationId: 'cb0102' }));
   }, [dispatch]);
-
-  // Process NOAA data for auto-alerts
-  useEffect(() => {
-    if (hasData) {
-      dispatch(processNoaaData({ noaaData: { currentData: data } }));
-    }
-  }, [dispatch, hasData, data]);
 
   const handleManualRefresh = () => {
     dispatch(fetchCurrentsData({ stationId: 'cb0102' }));

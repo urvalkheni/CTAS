@@ -5,6 +5,7 @@ import LandingPage from './components/LandingPage';
 import AuthSystem from './components/AuthSystem';
 import InteractiveDashboardRedux from './components/InteractiveDashboardRedux';
 import LogoutPage, { LogoutSuccessPage } from './components/LogoutPage';
+import TestPage from './components/TestPage';
 import { useUI, useAuth } from './store/hooks';
 import { setCurrentView, setAppLoading } from './store/slices/uiSlice';
 import { initializeAuth } from './store/slices/authSlice';
@@ -90,6 +91,7 @@ function AppContent() {
         {/* Public routes */}
         <Route path="/" element={<LandingPage onGetStarted={() => navigate('/login')} />} />
         <Route path="/login" element={<AuthSystem />} />
+        <Route path="/test" element={<TestPage />} />
         <Route path="/logout-success" element={<LogoutSuccessPage onReturnHome={() => {
           localStorage.removeItem('ctas_user');
           localStorage.removeItem('ctas_token');

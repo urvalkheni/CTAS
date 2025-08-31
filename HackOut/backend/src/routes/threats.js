@@ -43,6 +43,51 @@ router.get('/current', async (req, res) => {
   }
 });
 
+// @route   GET /api/threats/assessment/:stationId
+// @desc    Get threat assessment for specific station
+// @access  Public
+router.get('/assessment/:stationId', async (req, res) => {
+  try {
+    const { stationId } = req.params;
+    
+    const assessment = {
+      stationId,
+      station: {
+        id: stationId,
+        name: `Station ${stationId}`,
+        location: 'Cape Henry Area'
+      },
+      threats: [
+        {
+          type: 'coastal_flooding',
+          severity: 2,
+          probability: 0.3,
+          description: `Moderate coastal flooding risk for station ${stationId}`
+        },
+        {
+          type: 'storm_surge',
+          severity: 3,
+          probability: 0.4,
+          description: 'Elevated storm surge potential'
+        }
+      ],
+      overallRisk: 'moderate',
+      timestamp: new Date().toISOString(),
+      source: 'station-specific-assessment'
+    };
+    
+    res.json({
+      success: true,
+      data: assessment
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // @route   POST /api/threats/ai-predict
 // @desc    Get AI-powered threat predictions
 // @access  Public

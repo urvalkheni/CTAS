@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
   Plus, Filter, Search, MapPin, Clock, User, AlertTriangle, 
   CheckCircle, X, Eye, MessageSquare, Phone, Share2, Users,
@@ -22,8 +23,27 @@ const CommunityReports = () => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState({});
 
-  // Sample data - in real app, this would come from API
+  // Fetch reports from API
   useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const response = await axios.get('/api/community-reports');
+        if (response.data.success) {
+          setReports(response.data.reports);
+          setFilteredReports(response.data.reports);
+        } else {
+          console.error('Failed to fetch reports:', response.data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching reports:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchReports();
+    
+    // Fallback sample data if API fails
     const sampleReports = [
       {
         id: 'report_1',
@@ -188,36 +208,51 @@ const CommunityReports = () => {
   };
 
   const handleReportSubmit = (newReport) => {
-    const report = {
-      ...newReport,
-      id: `report_${Date.now()}`,
-      timestamp: new Date(),
-      status: 'active',
-      smsAlertsSent: Math.floor(Math.random() * 200) + 50,
-      acknowledgedBy: null
-    };
-    
-    setReports(prev => [report, ...prev]);
+    // New report already saved to database by the form
+    // Just add it to the local state
+    setReports(prev => [newReport, ...prev]);
+    setFilteredReports(prev => [newReport, ...prev]);
   };
 
-  const handleStatusChange = (reportId, newStatus) => {
-    setReports(prev => prev.map(report => 
-      report.id === reportId ? { ...report, status: newStatus } : report
-    ));
+  const handleStatusChange = async (reportId, newStatus) => {
+    try {
+      await axios.patch(`/api/community-reports/${reportId}/status`, { 
+        status: newStatus
+      });
+      
+      setReports(prev => prev.map(report => 
+        (report._id === reportId || report.reportId === reportId) ? { ...report, status: newStatus } : report
+      ));
+      
+      setFilteredReports(prev => prev.map(report => 
+        (report._id === reportId || report.reportId === reportId) ? { ...report, status: newStatus } : report
+      ));
+    } catch (error) {
+      console.error('Error updating report status:', error);
+    }
   };
 
   const sendAdditionalSMS = async (reportId) => {
-    try {
-      // Get the report
-      const report = reports.find(r => r.id === reportId);
-      if (!report) return;
+    // Find the sending report
+    const report = reports.find(r => r._id === reportId || r.reportId === reportId);
+    if (!report) return;
+    
+    // Prevent multiple SMS sending at once
+    if (sending[reportId]) {
+      return;
+    }
 
+    // Set sending state
+    setSending(prev => ({ ...prev, [reportId]: true }));
+    
+    try {
       console.log('Sending additional SMS alerts for:', report.title);
       
-      // In a real application, this would make an API call to your backend
-      // For example:
-      // const response = await fetch('/api/community-reports/send-sms', {
-      //   method: 'POST',
+      // Make actual API call to backend
+      await axios.post(`/api/community-reports/${reportId}/sms`, {
+        message: `COASTAL ALERT UPDATE: ${report.title} - ${report.description.substring(0, 100)}...`,
+        urgent: report.severity === 'high' || report.severity === 'critical'
+      });
       //   headers: { 'Content-Type': 'application/json' },
       //   body: JSON.stringify({ reportId, radius: 5 }) // 5km radius for example
       // });
@@ -395,7 +430,7 @@ const CommunityReports = () => {
               const TypeIcon = getTypeIcon(report.type);
               return (
                 <div
-                  key={report.id}
+                  key={report._id || report.reportId}
                   className="bg-gray-700/50 backdrop-blur-lg border border-gray-600/50 rounded-xl p-6 hover:bg-gray-700/70 transition-all cursor-pointer"
                   onClick={() => setSelectedReport(report)}
                 >
@@ -438,7 +473,7 @@ const CommunityReports = () => {
                               <Bell className="w-4 h-4" />
                               <span>{report.smsAlertsSent || 0} SMS alerts sent</span>
                             </div>
-                            {sending[report.id] && (
+                            {sending[report._id || report.reportId] && (
                               <div className="flex items-center space-x-2 text-yellow-400 animate-pulse">
                                 <Send className="w-4 h-4" />
                                 <span>Sending SMS...</span>
@@ -456,16 +491,16 @@ const CommunityReports = () => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                sendAdditionalSMS(report.id);
+                                sendAdditionalSMS(report._id || report.reportId);
                               }}
-                              disabled={sending[report.id]}
+                              disabled={sending[report._id || report.reportId]}
                               className={`${
-                                sending[report.id] 
+                                sending[report._id || report.reportId] 
                                   ? 'bg-blue-800 cursor-not-allowed' 
                                   : 'bg-blue-600 hover:bg-blue-700'
                               } text-white px-3 py-1 rounded text-sm transition-colors flex items-center space-x-1`}
                             >
-                              {sending[report.id] ? (
+                              {sending[report._id || report.reportId] ? (
                                 <>
                                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                   <span>Sending...</span>
@@ -482,7 +517,7 @@ const CommunityReports = () => {
                               value={report.status}
                               onChange={(e) => {
                                 e.stopPropagation();
-                                handleStatusChange(report.id, e.target.value);
+                                handleStatusChange(report._id || report.reportId, e.target.value);
                               }}
                               className="bg-gray-600 border border-gray-500 rounded text-white text-sm px-2 py-1 focus:outline-none focus:border-blue-500"
                               onClick={(e) => e.stopPropagation()}
@@ -550,13 +585,13 @@ const CommunityReports = () => {
                 </button>
                 
                 <button
-                  onClick={() => sendAdditionalSMS(selectedReport.id)}
-                  disabled={sending[selectedReport.id]}
+                  onClick={() => sendAdditionalSMS(selectedReport._id || selectedReport.reportId)}
+                  disabled={sending[selectedReport._id || selectedReport.reportId]}
                   className={`${
-                    sending[selectedReport.id] ? 'bg-blue-800 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                    sending[selectedReport._id || selectedReport.reportId] ? 'bg-blue-800 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
                   } text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center space-x-2`}
                 >
-                  {sending[selectedReport.id] ? (
+                  {sending[selectedReport._id || selectedReport.reportId] ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                       <span>Sending SMS...</span>
@@ -572,7 +607,7 @@ const CommunityReports = () => {
                 <div className="ml-auto">
                   <select
                     value={selectedReport.status}
-                    onChange={(e) => handleStatusChange(selectedReport.id, e.target.value)}
+                    onChange={(e) => handleStatusChange(selectedReport._id || selectedReport.reportId, e.target.value)}
                     className="bg-gray-700 border border-gray-600 rounded-lg text-white text-sm px-3 py-2 focus:outline-none focus:border-blue-500"
                   >
                     <option value="active">Set as Active</option>
@@ -769,7 +804,7 @@ const CommunityReports = () => {
               {/* Actions */}
               <div className="flex space-x-3 mt-6 pt-6 border-t border-gray-600">
                 <button
-                  onClick={() => sendAdditionalSMS(selectedReport.id)}
+                  onClick={() => sendAdditionalSMS(selectedReport._id || selectedReport.reportId)}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors flex items-center space-x-2"
                 >
                   <Send className="w-5 h-5" />

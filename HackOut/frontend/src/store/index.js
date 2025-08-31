@@ -15,7 +15,14 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
+        // Ignore these actions for serialization checks
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        // Ignore these paths in state for serialization checks
+        ignoredPaths: ['noaa.currentData', 'noaa.capeHenryData'],
       },
     }),
+  devTools: true,
 });
+
+// Export the configured store
+export default store;

@@ -5,18 +5,23 @@ const morgan = require('morgan');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
-const connectDB = require('./lib/db.js')
 
-
-// Load environment variables from .env file
+// Load environment variables from .env file - this must happen before importing modules that use env vars
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
+// Verify MongoDB URI is loaded
+console.log("MongoDB URI defined:", !!process.env.MONGODB_URI);
+if (!process.env.MONGODB_URI) {
+  console.error("ERROR: MongoDB URI is not defined in environment variables!");
+  process.exit(1);
+}
 
+const connectDB = require('./lib/db.js');
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Connect to Database (commented out for now - requires MongoDB)
-// connectDB();
+// Connect to Database
+connectDB();
 
 // Security Middleware
 app.use(helmet());
@@ -48,6 +53,7 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
+app.use('/api/health', require('./routes/healthCheck'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/threats', require('./routes/threats'));
 app.use('/api/reports', require('./routes/reports'));

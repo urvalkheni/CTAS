@@ -28,4 +28,69 @@ router.get('/echo', (req, res) => {
   });
 });
 
+// Cape Henry data endpoint
+router.get('/cape-henry', (req, res) => {
+  res.json({
+    success: true,
+    station: 'Cape Henry',
+    data: {
+      waterLevel: 2.1,
+      temperature: 24.5,
+      windSpeed: 12.3,
+      windDirection: 180,
+      timestamp: new Date().toISOString()
+    }
+  });
+});
+
+// Current data endpoint
+router.get('/current', (req, res) => {
+  res.json({
+    success: true,
+    station: 'General Current',
+    data: {
+      speed: 1.5,
+      direction: 120,
+      timestamp: new Date().toISOString()
+    }
+  });
+});
+
+// Currents data by station ID
+router.get('/currents/:stationId', (req, res) => {
+  const { stationId } = req.params;
+  res.json({
+    success: true,
+    stationId,
+    data: {
+      speed: 1.2,
+      direction: 110,
+      latest: {
+        speed: 1.2,
+        direction: 110,
+        timestamp: new Date().toISOString()
+      },
+      history: [
+        { speed: 1.1, direction: 105, timestamp: new Date(Date.now() - 60000).toISOString() },
+        { speed: 1.3, direction: 115, timestamp: new Date(Date.now() - 120000).toISOString() }
+      ],
+      station: {
+        id: stationId,
+        name: `Station ${stationId}`,
+        location: 'Cape Henry Area'
+      }
+    }
+  });
+});
+
+// NOAA connection status
+router.get('/status', (req, res) => {
+  res.json({
+    success: true,
+    status: 'connected',
+    message: 'NOAA API connection is active',
+    timestamp: new Date().toISOString()
+  });
+});
+
 module.exports = router;

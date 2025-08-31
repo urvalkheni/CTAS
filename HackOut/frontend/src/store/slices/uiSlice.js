@@ -5,6 +5,9 @@ const initialState = {
   // Current view management
   currentView: 'landing', // 'landing', 'auth', 'dashboard'
   previousView: null,
+  // Connection status
+  online: true,
+  syncStatus: 'idle', // 'idle', 'syncing', 'error'
   
   // Dashboard layout
   dashboard: {
@@ -250,6 +253,14 @@ const uiSlice = createSlice({
     
     setTimeFormat: (state, action) => {
       state.dataDisplay.timeFormat = action.payload;
+    },
+    
+    setOnlineStatus: (state, action) => {
+      state.online = action.payload;
+    },
+    
+    setSyncStatus: (state, action) => {
+      state.syncStatus = action.payload;
     },
     
     // Connection status

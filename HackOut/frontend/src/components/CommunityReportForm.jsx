@@ -180,34 +180,40 @@ const CommunityReportForm = ({ onClose, onSubmit, initialData = null }) => {
     setIsSubmitting(true);
     try {
       // Create form data with file uploads
-      const submitData = new FormData();
+      const formDataToSubmit = new FormData();
       
-      // Add basic form data
-      submitData.append('reportData', JSON.stringify({
+      // Add report ID and timestamp
+      const completeFormData = {
         ...formData,
-        media: undefined, // Remove media from JSON, will be added separately
-        timestamp: new Date().toISOString(),
-        id: `report_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      }));
+        media: undefined // Remove media from JSON, will be added separately
+      };
+      
+      // Prepare data for submission
+      formDataToSubmit.append('reportData', JSON.stringify(completeFormData));
 
-      // Add media files
-      formData.media.forEach((media, index) => {
-        submitData.append(`media_${index}`, media.file);
+      // Add media files if any
+      formData.media.forEach((media) => {
+        formDataToSubmit.append('media', media.file);
       });
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Send to backend API
+      const response = await fetch('/api/community-reports', {
+        method: 'POST',
+        body: formDataToSubmit,
+      });
 
-      // Show success and trigger SMS notifications
-      setShowSuccess(true);
-      
-      // Trigger SMS notifications if enabled
-      if (formData.notifications.community || formData.notifications.urgentAlert) {
-        await sendSMSNotifications();
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to submit report');
       }
 
+      const result = await response.json();
+      
+      // Show success message
+      setShowSuccess(true);
+
       setTimeout(() => {
-        if (onSubmit) onSubmit(formData);
+        if (onSubmit) onSubmit(result.report);
         if (onClose) onClose();
       }, 3000);
 

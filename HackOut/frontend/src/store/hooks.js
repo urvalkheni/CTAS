@@ -132,16 +132,18 @@ export const useNotifications = () => {
 
 export const useCurrentData = () => {
   const { currentData, isLoading, errors, dataFreshness } = useNoaaData();
-  
+  const safeData = currentData || {};
   return {
-    data: currentData,
-    isLoading: isLoading.currents,
-    error: errors.currents,
-    freshness: dataFreshness.currents,
+    data: safeData,
+    isLoading: isLoading?.currents ?? false,
+    error: errors?.currents ?? null,
+    freshness: dataFreshness?.currents ?? 'unknown',
     hasData: !!currentData,
-    latest: currentData?.latest,
-    history: currentData?.history || [],
-    station: currentData?.station,
+    latest: safeData.latest ?? null,
+    history: Array.isArray(safeData.history) ? safeData.history : [],
+    station: safeData.station ?? null,
+    // Add any other fields with safe defaults
+    dataOutage: safeData.dataOutage ?? null,
   };
 };
 
