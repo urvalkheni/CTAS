@@ -12,7 +12,9 @@ const initialState = {
   // Dashboard layout
   dashboard: {
     sidebarCollapsed: false,
-    activeTab: 'overview', // 'overview', 'currents', 'weather', 'alerts', 'reports', 'satellite'
+
+    activeTab: 'satellite', // 'overview', 'currents', 'weather', 'reports', 'satellite'
+
     gridLayout: 'default', // 'default', 'compact', 'expanded'
     refreshInterval: 300000, // 5 minutes in milliseconds
     autoRefresh: true,
@@ -34,7 +36,6 @@ const initialState = {
     weatherWidget: false,
     currentWidget: false,
     mapWidget: false,
-    alertsPanel: false,
   },
   
   // Theme and display preferences
