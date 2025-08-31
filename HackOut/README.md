@@ -1,4 +1,4 @@
-# Coastal Threat Assessment System (CTAS)
+# 🌊 Coastal Threat Alert System (CTAS)
 
 A comprehensive AI-powered platform for real-time coastal threat assessment and monitoring, integrating satellite imagery, weather data, and machine learning models to provide early warning systems for coastal communities.
 

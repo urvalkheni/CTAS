@@ -7,17 +7,14 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "80:80"
     environment:
-      - VITE_API_URL=http://backend:5000/api
-      - VITE_WS_URL=ws://backend:5000
+      - NODE_ENV=production
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     networks:
       - ctas-network
+    restart: unless-stopped
 
   # Backend Service
   backend:
@@ -26,7 +23,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
-      - "3001:3001"  # WebSocket port
     environment:
       - NODE_ENV=production
       - MONGODB_URI=mongodb://mongodb:27017/coastal-threat-db
@@ -38,11 +34,10 @@ services:
       - redis
       - ai-service
     volumes:
-      - ./backend:/app
-      - /app/node_modules
       - ./uploads:/app/uploads
     networks:
       - ctas-network
+    restart: unless-stopped
 
   # AI Service (Python)
   ai-service:
@@ -55,11 +50,11 @@ services:
       - FLASK_ENV=production
       - MODEL_PATH=/app/models
     volumes:
-      - ./ai-models:/app
       - ./ai-models/models:/app/models
       - ./ai-models/data:/app/data
     networks:
       - ctas-network
+    restart: unless-stopped
 
   # MongoDB Database
   mongodb:
