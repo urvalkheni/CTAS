@@ -2,6 +2,10 @@
 
 A comprehensive AI-powered platform for real-time coastal threat assessment and monitoring, integrating satellite imagery, weather data, and machine learning models to provide early warning systems for coastal communities.
 
+## 📂 Project Resources
+- [📑 PPT & 🎥 Video Link](https://drive.google.com/drive/folders/1ZUZX5f2rB4ALW3-pCrn0NiD4L4s0TZTg?usp=sharing)
+
+
 ## 🌊 Overview
 
 CTAS combines cutting-edge AI/ML technologies with real-time environmental data to assess and predict coastal threats including:
