@@ -15,8 +15,12 @@ import WeatherAlerts from './WeatherAlerts';
 import WeatherWidget from './WeatherWidget';
 import SatelliteMapWorking from './SatelliteMapWorking';
 import CommunityReports from './CommunityReports';
+import AdvancedAnalytics from './AdvancedAnalytics';
 
-import SatelliteMap from './SatelliteMap';
+// Safely import optional components with fallbacks
+const SatelliteMap = React.lazy(() => 
+  import('./SatelliteMap').catch(() => ({ default: () => <div>Map component not available</div> }))
+);
 import { useEffect } from 'react';
 
 
@@ -27,7 +31,7 @@ const InteractiveDashboard = ({ onLogout }) => {
 
 
   const { user, isAuthenticated } = useAuth();
-  const { alerts, unreadCount } = useAlerts();
+  const unreadCount = 0; // Placeholder for alerts - will be implemented later
 
   const { isConnected, syncStatus } = useConnectionStatus();
   const { 
@@ -81,37 +85,47 @@ const InteractiveDashboard = ({ onLogout }) => {
   };
 
   const renderTabContent = () => {
-    switch (activeTab) {
-      case 'overview':
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Satellite Map - Large, Left Side */}
-            <div className="lg:col-span-3">
-              <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-6 h-[800px]">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white flex items-center">
-                    <Satellite className="w-6 h-6 text-green-400 mr-2" />
-                    Satellite Map
-                  </h3>
-                  <div className="text-sm text-slate-400">Real-time coastal monitoring</div>
-                </div>
-                <div className="h-[720px]">
-                  <SatelliteMap 
-                    data={{
-                      coordinates: { lat: 19.0760, lng: 72.8777 },
-                      zoomLevel: 10,
-                      threats: [],
-                      weather: {}
-                    }}
-                    showControls={true}
-                    showLegend={true}
-                    height="100%"
-                  />
+    try {
+      switch (activeTab) {
+        case 'overview':
+          return (
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              {/* Satellite Map - Large, Left Side */}
+              <div className="lg:col-span-3">
+                <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-6 h-[800px]">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-white flex items-center">
+                      <Satellite className="w-6 h-6 text-green-400 mr-2" />
+                      Satellite Map
+                    </h3>
+                    <div className="text-sm text-slate-400">Real-time coastal monitoring</div>
+                  </div>
+                  <div className="h-[720px]">
+                    <React.Suspense fallback={
+                      <div className="flex items-center justify-center h-full">
+                        <div className="text-center">
+                          <div className="animate-spin w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+                          <p className="text-slate-400">Loading satellite map...</p>
+                        </div>
+                      </div>
+                    }>
+                      <SatelliteMap 
+                        data={{
+                          coordinates: { lat: 19.0760, lng: 72.8777 },
+                          zoomLevel: 10,
+                          threats: [],
+                          weather: {}
+                        }}
+                        showControls={true}
+                        showLegend={true}
+                        height="100%"
+                      />
+                    </React.Suspense>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Quick Stats and Other Components - Right Side */}
+              {/* Quick Stats and Other Components - Right Side */}
             <div className="lg:col-span-1 space-y-6">
               {/* Quick Stats */}
               <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-6">
@@ -207,6 +221,21 @@ const InteractiveDashboard = ({ onLogout }) => {
             <p className="text-slate-400">Select a tab to view specific data and controls.</p>
           </div>
         );
+      }
+    } catch (error) {
+      console.error('Error rendering tab content:', error);
+      return (
+        <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-red-400 mb-4">Error Loading Content</h3>
+          <p className="text-red-300 mb-4">Failed to load the {activeTab} tab content.</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Reload Page
+          </button>
+        </div>
+      );
     }
   };
 
