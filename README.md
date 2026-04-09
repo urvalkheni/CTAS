@@ -1,333 +1,189 @@
-# 🌊 Coastal Threat Alert System (CTAS)
+# CTAS - Coastal Threat Alert System
 
-A comprehensive AI-powered platform for real-time coastal threat assessment and monitoring, integrating satellite imagery, weather data, and machine learning models to provide early warning systems for coastal communities.
+A coastal monitoring workspace with a lightweight Next.js portal at the root and a larger React, Express, and FastAPI stack in `HackOut` for alerts, reports, weather, satellite maps, and coastal risk analysis.
 
-## 🌊 Overview
+## Overview
 
-CTAS combines cutting-edge AI/ML technologies with real-time environmental data to assess and predict coastal threats including:
-- Storm surge predictions
-- Coastal erosion monitoring
-- Mangrove ecosystem health assessment
-- Sea level rise analysis
-- Extreme weather pattern detection
+CTAS is a prototype for tracking coastal conditions and organizing community observations. The root app provides a simple web portal with dashboard pages and sample API routes. The `HackOut` workspace adds an interactive monitoring dashboard, backend services, and AI model endpoints. Together, they show how alerts, weather data, reports, map views, and prediction services can fit into one system.
 
-## 🏗️ Project Structure
+## Features
 
-```
-CTAS/
-├── frontend/                    # React frontend application
-│   ├── src/
-│   │   ├── components/         # Reusable UI components
-│   │   ├── pages/             # Page components
-│   │   ├── services/          # API services
-│   │   ├── utils/             # Utility functions
-│   │   └── assets/            # Static assets
-│   └── public/                # Public assets
-├── backend/                    # Node.js/Express backend
-│   ├── src/
-│   │   ├── controllers/       # Route controllers
-│   │   ├── models/            # Database models
-│   │   ├── routes/            # API routes
-│   │   ├── services/          # Business logic
-│   │   ├── middleware/        # Custom middleware
-│   │   └── config/            # Configuration files
-│   └── tests/                 # Backend tests
-├── ai-models/                  # Python AI/ML models
-│   ├── models/                # ML model files
-│   ├── data/                  # Training data
-│   ├── scripts/               # Utility scripts
-│   └── api/                   # AI API service
-├── shared/                     # Shared utilities
-│   ├── types/                 # TypeScript definitions
-│   ├── constants/             # Shared constants
-│   └── utils/                 # Shared utilities
-├── docs/                       # Documentation
-│   ├── api/                   # API documentation
-│   ├── deployment/            # Deployment guides
-│   └── user-guide/            # User documentation
-├── infrastructure/             # Infrastructure as code
-│   ├── docker/                # Docker configurations
-│   ├── kubernetes/            # K8s manifests
-│   └── terraform/             # Terraform configs
-└── tools/                      # Development tools
-    ├── scripts/               # Build/deployment scripts
-    └── configs/               # Tool configurations
-```
+- Root portal pages for Dashboard, Alerts, Reports, Leaderboard, Trends, About, and Settings.
+- Mock Next.js API routes for auth, alerts, reports, and leaderboard data.
+- MongoDB support through a cached connection helper and Mongoose models for users, reports, and alerts.
+- `HackOut` React app with landing, login/register, protected dashboard, logout, weather, satellite, threat monitoring, community reports, analytics, and profile views.
+- `HackOut` Express API for health, auth, weather, NOAA/current data, satellite, reports, threats, users, and community reports.
+- FastAPI AI service with model status, coastal threat prediction, mangrove health, algal bloom, ensemble scoring, and model retraining endpoints.
+- Map-based visualization using Google Maps and Leaflet components.
+- Community reporting workflows with report creation, filtering, status changes, SMS alert helpers, and nearby-report endpoints.
 
-## 🚀 Features
+## Tech Stack
 
-### Frontend (React + Vite)
-- **Modern UI/UX**: Glassmorphism design with responsive layouts
-- **Real-time Dashboard**: Live threat monitoring and alerts
-- **Interactive Maps**: Satellite imagery integration with threat overlays
-- **Mobile Responsive**: Optimized for all device types
-- **PWA Support**: Offline capabilities for critical functions
+- Languages: TypeScript, JavaScript, Python.
+- Root frontend: Next.js 15, React 19, Tailwind CSS 4, Mongoose, bcryptjs, Leaflet, React Leaflet, Recharts.
+- `HackOut` frontend: React 18, Vite, React Router, Redux Toolkit, Axios, Lucide React, React Hot Toast, Tailwind CSS 3, Framer Motion, Leaflet, React Leaflet, Recharts.
+- `HackOut` backend: Node.js, Express, Mongoose, JWT, bcryptjs, CORS, Helmet, Morgan, Compression, Multer, Nodemailer, Twilio, ws, xml2js.
+- AI service: FastAPI, Uvicorn, Pydantic, NumPy, Pandas, Scikit-learn, TensorFlow, PyTorch, GeoPandas, Rasterio, OpenCV, Matplotlib, Folium.
+- Tools and deployment: npm, Vercel, Railway, Docker Compose, PowerShell-friendly setup scripts.
 
-### Backend (Node.js + Express)
-- **RESTful API**: Comprehensive API for all system functions
-- **Real-time WebSockets**: Live data streaming and notifications
-- **Authentication**: JWT-based secure authentication
-- **Database**: MongoDB with optimized schemas
-- **Caching**: Redis for performance optimization
-- **Rate Limiting**: API protection and abuse prevention
+## Project Structure
 
-### AI/ML Models (Python)
-- **Mangrove Health Assessment**: Random Forest-based ecosystem monitoring
-- **Coastal Threat Prediction**: Multi-model ensemble for threat detection
-- **Satellite Image Analysis**: CNN-based image processing
-- **Weather Pattern Recognition**: Time series analysis for extreme weather
-- **Anomaly Detection**: Real-time outlier detection in environmental data
+- `app/` -> Active Next.js route tree and API handlers for the root portal.
+- `src/app/` -> Default starter files kept in the repo; the live app uses `app/`.
+- `lib/mongodb.ts` -> Cached MongoDB connection helper for the root app.
+- `models/` -> Mongoose schemas for users, reports, and alerts.
+- `public/` -> Static assets used by the root app.
+- `HackOut/frontend/` -> React/Vite dashboard, routing, Redux store, UI components, and local services.
+- `HackOut/backend/` -> Express server, controllers, routes, middleware, and database setup.
+- `HackOut/ai-models/` -> Python model scripts and the FastAPI prediction service.
+- `HackOut/Dataset_for_chatbot.csv` -> Dataset used by the workspace chatbot utilities.
+- `HackOut/deploy*.sh`, `HackOut/deploy*.bat`, `HackOut/docker-compose.yml`, `HackOut/vercel.json`, `HackOut/railway.json` -> Deployment helpers and platform configuration.
+- `components/` and `styles/` -> Empty root-level placeholders in the current workspace.
 
-## 🛠️ Technology Stack
+## Setup & Installation
 
-### Frontend
-- **React 18**: Component-based UI framework
-- **Vite**: Fast build tool and dev server
-- **TailwindCSS v4**: Utility-first CSS framework
-- **Lucide React**: Modern icon library
-- **React Router**: Client-side routing
-- **Axios**: HTTP client for API calls
+Run each service in its own terminal. If you only want the root portal, stop after step 2.
 
-## 🔑 API Credentials & Environment Setup
+1. Clone the repository.
 
-For security reasons, API credentials should be stored in environment variables.
-
-See [ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md) for detailed instructions on setting up your environment variables and API credentials.
-
-### Backend
-- **Node.js**: JavaScript runtime
-- **Express.js**: Web application framework
-- **MongoDB**: NoSQL database
-- **Mongoose**: MongoDB object modeling
-- **Redis**: In-memory data store
-- **JWT**: JSON Web Tokens for authentication
-- **WebSocket**: Real-time communication
-
-### AI/ML
-- **Python 3.9+**: Programming language
-- **scikit-learn**: Machine learning library
-- **TensorFlow**: Deep learning framework
-- **OpenCV**: Computer vision library
-- **NumPy/Pandas**: Data manipulation
-- **Geospatial Libraries**: GDAL, Rasterio, Shapely
-
-### DevOps & Infrastructure
-- **Docker**: Containerization
-- **Kubernetes**: Container orchestration
-- **Terraform**: Infrastructure as code
-- **GitHub Actions**: CI/CD pipeline
-- **Nginx**: Reverse proxy and load balancer
-
-## 📋 Prerequisites
-
-- **Node.js** 18.0 or higher
-- **Python** 3.9 or higher
-- **MongoDB** 5.0 or higher
-- **Redis** 6.0 or higher
-- **Git** for version control
-
-## 🚀 Quick Start
-
-### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-org/CTAS.git
+git clone <repo-url>
 cd CTAS
 ```
 
-### 2. Environment Setup
-```bash
-# Copy environment template
-cp .env.example .env
+This downloads the project and moves you into the repository root.
 
-# Edit environment variables
-# Add your API keys, database URLs, etc.
-```
+2. Install and start the root Next.js portal.
 
-### 3. Frontend Setup
 ```bash
-cd frontend
 npm install
 npm run dev
 ```
 
-### 4. Backend Setup
+This installs the root dependencies and starts the Next.js app on `http://localhost:3000`.
+
+3. Create the `HackOut` environment file if you want to run the extended stack.
+
+```powershell
+Copy-Item HackOut\.env.example HackOut\.env
+```
+
+Edit `HackOut\.env` and fill in `MONGODB_URI`, `JWT_SECRET`, and any API keys before starting the backend.
+
+4. Start the `HackOut` frontend.
+
 ```bash
-cd backend
+cd HackOut\frontend
 npm install
 npm run dev
 ```
 
-### 5. AI Models Setup
+This starts the Vite app on `http://localhost:5173`.
+
+5. Start the `HackOut` backend.
+
 ```bash
-cd ai-models
-pip install -r requirements.txt
-python api/app.py
+cd HackOut\backend
+npm install
+npm run dev
 ```
 
-## 🔧 Configuration
+This starts the Express API on `http://localhost:5000`.
 
-### Environment Variables
-```env
-# Database
-MONGODB_URI=mongodb://localhost:27017/coastal-threat-db
-REDIS_URL=redis://localhost:6379
+6. Start the AI model service.
 
-# API Keys
-OPENWEATHER_API_KEY=your_api_key
-NASA_API_KEY=your_api_key
-SENTINEL_API_KEY=your_api_key
-
-# Authentication
-JWT_SECRET=your_secret_key
-JWT_EXPIRE=7d
-
-# AI Service
-PYTHON_AI_SERVICE_URL=http://localhost:8000
-```
-
-### API Keys Required
-- **OpenWeatherMap**: Weather data and forecasts
-- **NASA Earth Data**: Satellite imagery and datasets
-- **Copernicus/Sentinel**: European satellite data
-- **Twilio**: SMS/WhatsApp notifications (optional)
-
-## 📖 API Documentation
-
-### Authentication Endpoints
-```
-POST /api/auth/register    # User registration
-POST /api/auth/login       # User login
-POST /api/auth/refresh     # Token refresh
-```
-
-### Data Endpoints
-```
-GET  /api/threats          # Get threat assessments
-POST /api/reports          # Submit field reports
-GET  /api/weather          # Weather data
-GET  /api/satellite        # Satellite imagery
-```
-
-### AI Model Endpoints
-```
-POST /api/ai/predict       # Run predictions
-GET  /api/ai/models        # Available models
-POST /api/ai/retrain       # Retrain models
-```
-
-## 🧪 Testing
-
-### Frontend Tests
 ```bash
-cd frontend
-npm run test
-npm run test:coverage
+cd HackOut\ai-models
+python -m pip install -r requirements.txt
+python api/main.py
 ```
 
-### Backend Tests
+This installs the Python dependencies and starts the FastAPI service on `http://localhost:8000`.
+
+## Usage Examples
+
 ```bash
-cd backend
-npm run test
-npm run test:integration
+npm run dev
 ```
 
-### AI Model Tests
+Starts the root portal so you can open the dashboard, alerts, reports, and other Next.js pages.
+
 ```bash
-cd ai-models
-python -m pytest tests/
+curl http://localhost:5000/api/health
 ```
 
-## 🚀 Deployment
+Checks that the `HackOut` backend is running.
 
-### Docker Deployment
 ```bash
-# Build and run all services
-docker-compose up -d
-
-# Scale specific services
-docker-compose up -d --scale backend=3
+curl http://localhost:8000/models/status
 ```
 
-### Kubernetes Deployment
+Checks which AI models are available in the FastAPI service.
+
 ```bash
-# Apply all manifests
-kubectl apply -f infrastructure/kubernetes/
-
-# Check deployment status
-kubectl get pods -n ctas
+curl http://localhost:3000/api/alerts
 ```
 
-## 📊 Monitoring & Observability
+Returns the sample alert payload used by the root Next.js app.
 
-- **Application Metrics**: Prometheus + Grafana dashboards
-- **Logging**: Centralized logging with ELK stack
-- **Error Tracking**: Sentry integration
-- **Uptime Monitoring**: Health checks and alerts
-- **Performance**: APM with detailed traces
+## Example Output
 
-## 🤝 Contributing
+```json
+{
+    "status": "OK",
+    "message": "CTAS Backend API is running",
+    "timestamp": "2026-04-09T12:00:00.000Z",
+    "version": "1.0.0"
+}
+```
 
-1. **Fork the Repository**
-2. **Create Feature Branch**: `git checkout -b feature/amazing-feature`
-3. **Commit Changes**: `git commit -m 'Add amazing feature'`
-4. **Push to Branch**: `git push origin feature/amazing-feature`
-5. **Open Pull Request**
+```json
+{
+    "models": {
+        "algal_bloom": { "status": "ready" },
+        "sea_level": { "status": "unavailable" },
+        "cyclone": { "status": "ready" }
+    }
+}
+```
 
-### Development Guidelines
-- Follow ESLint/Prettier configurations
-- Write tests for new features
-- Update documentation
-- Follow semantic versioning
+These responses show the backend health check and the AI model service status format.
 
-## 📝 License
+## How It Works
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+1. The root Next.js app renders the coastal portal and serves mock JSON endpoints.
+2. The `HackOut` frontend stores auth data in `localStorage`, routes with React Router, and shows dashboard modules based on the selected view.
+3. The frontend calls the Express backend for weather, NOAA, satellite, report, auth, and community-report data.
+4. The backend reads environment variables, connects to MongoDB, and returns route-specific JSON.
+5. The FastAPI service loads any available AI model classes and returns prediction or status payloads.
 
-## 🙋‍♂️ Support
+## Limitations / Notes
 
-- **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/your-org/CTAS/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/CTAS/discussions)
-- **Email**: support@ctas-project.org
+- Several root API routes return mock data instead of writing to a database.
+- Some `HackOut` UI modules rely on services or API keys that must be configured in `.env`.
+- AI model loading is optional; missing model files are reported as unavailable rather than crashing the service.
+- The repository includes starter files and experimental components that are not part of the active root app route tree.
+- The satellite component loads Google Maps from an external script, so it requires network access and a valid key.
 
-## 🔮 Roadmap
+## Learning Outcomes
 
-### Phase 1 (Current)
-- ✅ Basic threat assessment system
-- ✅ Weather data integration
-- ✅ Simple ML models
-- ✅ Web dashboard
+- Next.js app routing and API handlers.
+- React state management with Redux and React Router.
+- MongoDB and Mongoose schema design.
+- Express API development.
+- FastAPI and Pydantic service design.
+- External API integration for weather and NOAA data.
+- Map-based UI and geospatial visualization.
+- Basic ML-serving patterns.
 
-### Phase 2 (Next Quarter)
-- 🔄 Advanced AI models
-- 🔄 Mobile applications
-- 🔄 Real-time alerts
-- 🔄 Community reporting
+## Future Improvements
 
-### Phase 3 (Future)
-- 📋 IoT sensor integration
-- 📋 Drone surveillance
-- 📋 Blockchain verification
-- 📋 Global deployment
+- Replace mock root endpoints with persistent database-backed handlers.
+- Unify the root Next.js portal and `HackOut` UI into one cohesive frontend.
+- Add automated tests for the backend and AI service.
+- Persist report and alert creation instead of relying on sample data in the root app.
 
-## 🌟 Acknowledgments
+## Disclaimer
 
-- **NASA Earth Science Division** for satellite data access
-- **Copernicus Programme** for Sentinel imagery
-- **OpenWeatherMap** for weather APIs
-- **Open Source Community** for amazing tools and libraries
+This repository is a prototype and demo workspace. It should not be treated as an emergency-warning system or as an authoritative environmental forecast source.
 
----
-
-**Built with ❤️ for coastal communities worldwide**+ Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
